@@ -1,0 +1,166 @@
+{
+    "name": "mcp-tester",
+    "displayName": "MCP Tester",
+    "description": "A simple mcp tester for vscode",
+    "version": "0.0.1",
+    "publisher": "echo.ai",
+    "engines": {
+        "vscode": "^1.74.0"
+    },
+    "categories": [
+        "Debuggers",
+        "Testing"
+    ],
+    "keywords": [
+        "mcp",
+        "test",
+        "debug",
+        "client"
+    ],
+    "activationEvents": [
+        "onStartupFinished"
+    ],
+    "main": "./out/extension.js",
+    "browser": "./out/extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "mcp-tester.open",
+                "title": "Open MCP Tester",
+                "category": "MCP"
+            },
+            {
+                "command": "mcp-tester.connect",
+                "title": "Connect to MCP Server",
+                "category": "MCP"
+            }
+        ],
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "mcp-tester",
+                    "title": "MCP Tester",
+                    "icon": "${play}"
+                }
+            ]
+        },
+        "views": {
+            "mcp-tester": [
+                {
+                    "id": "mcp-tester",
+                    "name": "MCP Tester",
+                    "type": "webview"
+                }
+            ]
+        }
+    },
+    "configuration": {
+        "title": "MCP Tester",
+        "properties": {
+            "mcp-tester.autoStart": {
+                "type": "boolean",
+                "default": true,
+                "description": "Automatically start the MCP Tester when VS Code starts"
+            },
+            "mcp-tester.defaultTransport": {
+                "type": "string",
+                "enum": [
+                    "stdio",
+                    "sse",
+                    "streamable http"
+                ],
+                "default": "stdio",
+                "description": "The default transport to use for MCP Tester"
+            },
+            "mcp-tester.servers": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "The name of the server"
+                        },
+                        "type":{
+                            "type": "string",
+                            "enum": [
+                                "stdio",
+                                "sse",
+                                "streamable http"
+                            ],
+                            "description":"transport type"
+                        },
+                        "command":{
+                            "type": "string",
+                            "description": "command to run the server(for the stdio transport)"
+                        },
+                        "url":{
+                            "type": "string",
+                            "description": "url to connect to the server(for the sse and streamable http transports)"
+
+                        },
+                        "env":{
+                            "type": "object",
+                            "description": "environment variables to pass to the server(for the stdio transport)"
+                        }
+                    }
+                },
+                "default":[],
+                "description": "the list of predefined MCP servers"
+            },
+            "mcp-tester.timeout":{
+                "type": "number",
+                "default": 3000,
+                "description": "the timeout for the MCP server to respond"
+            },
+            "mcp-tester.maxHistory":{
+                "type":"number",
+                "default": 100,
+                "description": "the maximum number of history entries to keep"
+            },
+            "mcp-tester.enableLogging":{
+                "type":"boolean",
+                "default": false,
+                "description": "whether to enable logging"
+            },
+            "mcp-tester.maxRetryAttempts":{
+                "type":"number",
+                "default": 3,
+                "description": "the maximum number of retry attempts"
+            },
+            "mcp-tester.retryDelay":{
+                "type":"number",
+                "default": 1000,
+                "description": "the delay between retry attempts in milliseconds"
+            }
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "num run package",
+        "compile": "webpack",
+        "watch": "webpack --watch",
+        "package": "webpack --mode production --devtool hidden-source-map",
+        "pretest": "nup run compile && npm run lint",
+        "lint": "eslint ./src --ext ts",
+        "test": "node ./out/test/runTest.js",
+        "build":"npm run compile"
+    },
+    "devDependencies": {
+        "@types/node":"16.x",
+        "@types/vscode":"^1.74.0",
+        "@typescript-eslint/eslint-plugin":"^5.45.0",
+        "@typescript-eslint/parser":"^5.45.0",
+        "eslint":"^8.28.0",
+        "ts-loader":"^9.5.2",
+        "typescript":"^4.9.4",
+        "vsce":"^2.15.0",
+        "webpack":"5.100.2",
+        "webpack-cli":"^6.0.1"
+    },
+    "dependencies": {
+        "@modelcontextprotocol/sdk":"^1.13.1",
+        "cors":"^2.8.5",
+        "express":"^4.18.2",
+        "ws":"^8.13.0"
+    }
+}
