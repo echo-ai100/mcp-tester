@@ -1,0 +1,49 @@
+{
+    // TypeScript 编译器选项配置
+    "compilerOptions": {
+        // 指定生成的模块代码形式，这里使用 commonjs（Node.js 模块系统）
+        "module": "commonjs",
+        // 指定编译目标 JavaScript 版本，这里使用 ES2020
+        "target": "ES2020",
+        // 指定编译后 JavaScript 文件的输出目录
+        "outDir": "out",
+        // 指定需要引入的库文件，这些库文件用于类型检查和编译
+        "lib": [
+            // 包含 ES2020 的 API
+            "ES2020",
+            // 包含 DOM API（用于操作网页元素）
+            "DOM"
+        ],
+        // 生成对应的 .map 文件，便于调试
+        "sourceMap": true,
+        // 指定源代码的根目录
+        "rootDir": "src",
+        // 启用所有严格类型检查选项
+        "strict": true,
+        // 允许 export = xxx 和 import = require() 语法，并正确处理类型
+        "esModuleInterop": true,
+        // 跳过对声明文件 (*.d.ts) 的类型检查，提高编译速度
+        "skipLibCheck": true,
+        // 强制文件名大小写一致性检查
+        "forceConsistentCasingInFileNames": true,
+        // 允许导入 .json 文件
+        "resolveJsonModule": true,
+        // 生成对应的 .d.ts 声明文件
+        "declaration": true,
+        // 为声明文件生成 source map
+        "declarationMap": true
+    },
+    // 指定需要排除的目录，这些目录不会被 TypeScript 编译器处理
+    "exclude": [
+        // 排除 node_modules 目录
+        "node_modules",
+        // 排除 .vscode-test 目录
+        ".vscode-test",
+        // 排除 client-src 目录
+        "client-src",
+        // 排除 client-vite-build 目录
+        "client-vite-build",
+        // 排除 src/vue-webview 目录
+        "src/vue-webview"
+    ]
+}
