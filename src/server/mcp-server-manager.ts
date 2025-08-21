@@ -128,4 +128,25 @@ export class MCPServerManager extends EventEmitter {
             throw e;
         }
     }
+
+    //调用工具
+    public async callTool(name: string, parameters: any):Promise<any>{ 
+        if(!this._client || !this._isConnected){
+            throw new Error('client not connected');
+        }
+        try{
+            const timeout = vscode.workspace.getConfiguration('mcp-tester').get('timeout',30000);
+            const result = await Promise.race([
+                this._client.callTool({name,arguments:parameters}),
+                new Promise((_,reject)=> setTimeout(()=>reject(new Error('timeout')),timeout))
+            ])
+
+            return result
+        }catch(e){
+            const errorMsg = e instanceof Error ? e.message : String(e)
+            const userFriendlyError = new Error(`Error calling tool ${name}: ${errorMsg}`)
+            vscode.window.showErrorMessage(userFriendlyError.message)
+            throw userFriendlyError
+        }
+    }
 }
