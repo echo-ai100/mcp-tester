@@ -149,4 +149,98 @@ export class MCPServerManager extends EventEmitter {
             throw userFriendlyError
         }
     }
+
+    //列出所有资源
+    public async listResources(): Promise<Resource[]> {
+        if(!this._client || !this._isConnected){
+            throw new Error('client not connected');
+        }
+        try{
+            const timeout = vscode.workspace.getConfiguration('mcp-tester').get('timeout',30000);
+            const result = await Promise.race([
+                this._client.listResources(),
+                new Promise((_,reject)=> setTimeout(()=>reject(new Error('timeout')),timeout))
+            ])
+            const typedResult = result as {resources:Resource[]}
+            return typedResult.resources;
+        }catch(e){
+            const errorMsg = e instanceof Error ? e.message : String(e)
+            const userFriendlyError = new Error(`Error listing resources: ${errorMsg}`)
+            vscode.window.showErrorMessage(userFriendlyError.message)
+            throw userFriendlyError
+        }
+    }
+
+    //列出所有提示词
+    public async listPrompts(): Promise<Prompt[]> {
+        if(!this._client || !this._isConnected){
+            throw new Error('client not connected');
+        }
+        try{
+            const timeout = vscode.workspace.getConfiguration('mcp-tester').get('timeout',30000);
+            const result = await Promise.race([
+                this._client.listPrompts(),
+                new Promise((_,reject)=> setTimeout(()=>reject(new Error('timeout')),timeout))
+            ])
+            const typedResult = result as {prompts:Prompt[]}
+            return typedResult.prompts;
+        }catch(e){
+            const errorMsg = e instanceof Error ? e.message : String(e)
+            const userFriendlyError = new Error(`Error listing prompts: ${errorMsg}`)
+            vscode.window.showErrorMessage(userFriendlyError.message)
+            throw userFriendlyError
+        }
+    }
+
+    public async readResource(uri: string): Promise<any> {
+        if(!this._client || !this._isConnected){
+            throw new Error('client not connected');
+        }
+        try{
+            const timeout = vscode.workspace.getConfiguration('mcp-tester').get('timeout',30000);
+            const result = await Promise.race([
+                this._client.readResource({uri}),
+                new Promise((_,reject)=> setTimeout(()=>reject(new Error('timeout')),timeout))
+            ]);
+
+            return result as any
+        }catch(e){
+            const errorMsg = e instanceof Error ? e.message : String(e)
+            const userFriendlyError = new Error(`Error reading resource ${uri}: ${errorMsg}`)
+            vscode.window.showErrorMessage(userFriendlyError.message)
+            throw userFriendlyError
+        }
+    }
+
+    public get isConnected(): boolean {
+        return this._isConnected;
+    }
+
+    //断开连接
+    public async disconnect(): Promise<void> {
+       try{
+        if(this._client){
+            await this._client.close();
+        }
+
+        if(this._transport){
+            try{
+                await this._transport.close();
+            }catch(e){
+                console.error(`Error closing transport: ${e}`);
+
+            }
+        }
+       }catch(error){
+        console.error(`Error disconnecting from MCP Server: ${error}`);
+        this.emit('error',error)
+       }finally{
+        this._isConnected = false;
+        this._client = null;
+        this._transport = null;
+        this._config = null;
+        this.emit('disconnected')
+        vscode.window.showInformationMessage('Disconnected from MCP Server');
+       }
+    }
 }
