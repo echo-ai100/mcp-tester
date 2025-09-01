@@ -212,6 +212,24 @@ export class MCPServerManager extends EventEmitter {
         }
     }
 
+    public async ping(): Promise<void> {
+        if(!this._client || !this._isConnected){
+            throw new Error('client not connected');
+        }
+        try{
+            const timeout = vscode.workspace.getConfiguration('mcp-tester').get('timeout',30000);
+            await Promise.race([
+                this._client.ping(),
+                new Promise((_,reject)=> setTimeout(()=>reject(new Error('timeout')),timeout))
+            ])
+        }catch(e){
+            const errorMsg = e instanceof Error ? e.message : String(e)
+            const userFriendlyError = new Error(`Error pinging MCP Server: ${errorMsg}`)
+            vscode.window.showErrorMessage(userFriendlyError.message)
+            throw userFriendlyError
+        }
+    }
+
     public get isConnected(): boolean {
         return this._isConnected;
     }

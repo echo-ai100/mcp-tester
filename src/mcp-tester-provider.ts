@@ -27,8 +27,8 @@ export class MCPTesterProvider implements vscode.WebviewViewProvider {
 
         webviewView.webview.onDidReceiveMessage(
             async (data) => {
-                
-                try{
+
+                try {
                     switch (data.type) {
                         case 'connect':
                             await this._serverManager.connect(data.config);
@@ -42,7 +42,7 @@ export class MCPTesterProvider implements vscode.WebviewViewProvider {
                         case 'listTools':
                             const tools = await this._serverManager.listTools();
                     }
-                }catch(error){
+                } catch (error) {
 
                     const errorMsg = error instanceof Error ? error.message : String(error);
                     vscode.window.showErrorMessage(errorMsg);
@@ -50,7 +50,7 @@ export class MCPTesterProvider implements vscode.WebviewViewProvider {
                     this._view?.webview.postMessage({
                         type: 'error',
                         error: errorMsg,
-                        timestamp:new Date().toISOString()
+                        timestamp: new Date().toISOString()
                     });
                 }
             },
@@ -60,92 +60,91 @@ export class MCPTesterProvider implements vscode.WebviewViewProvider {
 
     }
 
-    //获取工具列表
-    private async _handleListTools(webview?:vscode.Webview){
-        try{
-            const tools = await this._serverManager.listTools();
-            const targetWebview = webview || this._view?.webview;
-            if(targetWebview){
-                targetWebview.postMessage({
-                    type: 'list-tools',
-                    tools
-                });
-
-            }
-        }catch(error){
-            const errorMsg = error instanceof Error ? error.message : String(error);
-            vscode.window.showErrorMessage(`Failed to list tools:${errorMsg}`);
-        }
-    }
-
     //获取提示词列表
-    private async _handleListPrompts(){
-        try{
+    private async _handleListPrompts() {
+        try {
             const prompts = await this._serverManager.listPrompts();
-            if(this._toolsPanel && this._toolsPanel.webview){
+            if (this._toolsPanel && this._toolsPanel.webview) {
                 this._toolsPanel.webview.postMessage({
                     type: 'prompts-list',
                     prompts
                 });
             }
-        }catch(error){
+        } catch (error) {
             const errorMsg = error instanceof Error ? error.message : String(error);
             vscode.window.showErrorMessage(`Failed to list prompts`)
         }
     }
 
     //获取资源列表
-    private async _handleListResources(){
-        try{
+    private async _handleListResources() {
+        try {
             const resources = await this._serverManager.listResources();
-            if(this._toolsPanel && this._toolsPanel.webview){
+            if (this._toolsPanel && this._toolsPanel.webview) {
                 this._toolsPanel.webview.postMessage({
                     type: 'list-resources',
                     resources
                 });
             }
-        }catch(error){
+        } catch (error) {
             const errorMsg = error instanceof Error ? error.message : String(error);
             vscode.window.showErrorMessage(`Failed to list resources:${errorMsg}`);
         }
     }
 
     //读取资源
-    private async _handleReadResource(uri:string){
-        try{
+    private async _handleReadResource(uri: string) {
+        try {
             const content = await this._serverManager.readResource(uri);
-            if(this._toolsPanel && this._toolsPanel.webview){
+            if (this._toolsPanel && this._toolsPanel.webview) {
                 this._toolsPanel.webview.postMessage({
                     type: 'read-resource-result',
                     content
                 });
             }
-        }catch(error){
+        } catch (error) {
             const errorMsg = error instanceof Error ? error.message : String(error);
         }
     }
 
+    //获取工具列表
+    private async _handleListTools(webview?: vscode.Webview) {
+        try {
+            const tools = await this._serverManager.listTools();
+            const targetWebview = webview || this._view?.webview;
+            if (targetWebview) {
+                targetWebview.postMessage({
+                    type: 'list-tools',
+                    tools
+                });
+
+            }
+        } catch (error) {
+            const errorMsg = error instanceof Error ? error.message : String(error);
+            vscode.window.showErrorMessage(`Failed to list tools:${errorMsg}`);
+        }
+    }
     //调用工具
-    private async _handleCallTool(toolName:string,parameters:any){
-        try{
-            const result = await this._serverManager.callTool(toolName,parameters);
-            if(this._toolsPanel && this._toolsPanel.webview){
+    private async _handleCallTool(toolName: string, parameters: any) {
+        try {
+            const result = await this._serverManager.callTool(toolName, parameters);
+            if (this._toolsPanel && this._toolsPanel.webview) {
                 this._toolsPanel.webview.postMessage({
                     type: 'call-tool',
                     result
                 });
             }
-        }catch(error){
+        } catch (error) {
             const errorMsg = error instanceof Error ? error.message : String(error);
             vscode.window.showErrorMessage(`Failed to call tool:${errorMsg}`);
         }
     }
 
     //处理连接
-    private async _handleConnect(config:any){
-        try{
+    private async _handleConnect(config: any) {
+        try {
             const configuration = vscode.workspace.getConfiguration('mcp-tester');
-            const servers = configuration.get<any[]>('servers')||[];
+            const servers = configuration.get<any[]>('servers') || [];
 
             const serverConfig = {
                 name: config.name || `MCP Server ${servers.length + 1}`,
@@ -155,12 +154,12 @@ export class MCPTesterProvider implements vscode.WebviewViewProvider {
                 env: config.env
             }
 
-            const existingIndex = servers.findIndex(server => server.name === serverConfig.name || 
+            const existingIndex = servers.findIndex(server => server.name === serverConfig.name ||
                 (server.type === serverConfig.type && server.url === serverConfig.url && server.command === serverConfig.command));
 
-            if(existingIndex >= 0){
+            if (existingIndex >= 0) {
                 servers[existingIndex] = serverConfig;
-            }else{
+            } else {
                 servers.push(serverConfig);
             }
 
@@ -171,48 +170,192 @@ export class MCPTesterProvider implements vscode.WebviewViewProvider {
             await this._handleOpenToolsPanel();
 
             vscode.window.showInformationMessage(`Connected to ${serverConfig.name}`);
-        }catch(error){
+        } catch (error) {
             const errorMsg = error instanceof Error ? error.message : String(error);
             vscode.window.showErrorMessage(`Failed to connect:${errorMsg}`);
         }
     }
 
-    //获取连接状态
-    private async _handleGetStatus(){ 
-        const isConnected = this._serverManager.isConnected;
-        const capabilities = isConnected ? {tools:true,prompts:true,resources:true} : {};
-        const configuration = vscode.workspace.getConfiguration('mcp-tester');
-        const servers = configuration.get<any[]>('servers')||[];
-        this._view?.webview.postMessage({
-            type: 'connection-status',
-            status:isConnected? 'connected':'disconnected',
-            capabilities,
-            savedServers:servers
-        });
+    private async _handleDisconnect() {
+        try {
+            await this._serverManager.disconnect();
+            this._view?.webview.postMessage({
+                type: 'connection-status',
+                status: 'disconnected',
+                capablilities: {}
+            });
+            vscode.window.showInformationMessage('Disconnected from MCP Server');
+        } catch (error) {
+            const errorMsg = error instanceof Error ? error.message : String(error);
+            vscode.window.showErrorMessage(`Failed to disconnect:${errorMsg}`);
+        }
     }
 
-    private async _handleOpenToolsPanel(){
-        try{
-            if(!this._toolsPanel){
-                this._toolsPanel = vscode.window.createWebviewPanel(
-                    'mcpToolsPanel',
-                    'MCP Tools',
-                    vscode.ViewColumn.One,
+    //ping  
+    private async _handlePing() {
+        try {
+            if (this._toolsPanel && this._toolsPanel.webview) {
+                if (this._serverManager.isConnected) {
+                    const result = await this._serverManager.ping();
+                    this._toolsPanel.webview.postMessage({
+                        type: 'console-output',
+                        output: `Ping result: ${result}`
+                    });
 
-                    {
-                        enableScripts: true,
-                        localResourceRoots: [
-                            this._context.extensionUri,
-                            vscode.Uri.joinPath(this._context.extensionUri, 'webview-dist')
-                        ]
-                    }
-                )
+                }
             }
+
+        } catch (error) {
+            const errorMsg = error instanceof Error ? error.message : String(error);
+            if (this._toolsPanel && this._toolsPanel.webview) {
+                this._toolsPanel.webview.postMessage({
+                    type: 'console-output',
+                    output: errorMsg
+                });
+            }
+        }
+    }
+
+    //删除服务器
+    private async _handleDeleteServer(name: string) {
+        try {
+            const answer = await vscode.window.showQuickPick(['Yes', 'No'], {
+                placeHolder: `Are you sure you want to delete ${name}?`
+            });
+
+            if (answer === 'Yes') {
+                const configuration = vscode.workspace.getConfiguration('mcp-tester');
+                const servers = configuration.get<any[]>('servers') || [];
+                const updatedServers = servers.filter(server => server.name !== name);
+                await configuration.update('servers', updatedServers, vscode.ConfigurationTarget.Global);
+                await this._handleGetStatus();
+                vscode.window.showInformationMessage(`Deleted ${name}`);
+            }
+        } catch (error) {
+            const errorMsg = error instanceof Error ? error.message : String(error);
+            vscode.window.showErrorMessage(`Failed to delete server:${errorMsg}`);
+        }
+    }
+
+    private async _handleLoadServer(name: string) {
+        try {
+            const configuration = vscode.workspace.getConfiguration('mcp-tester');
+            const servers = configuration.get<any[]>('servers') || [];
+            const server = servers.find(server => server.name === name);
+            if (!server) {
+                vscode.window.showErrorMessage(`Server ${name} not found`);
+                return;
+            }
+
+            this._view?.webview.postMessage({
+                type: 'load-config',
+                config: server
+            });
+
+            vscode.window.showInformationMessage(`Loaded ${name}`);
+        } catch (error) {
+            const errorMsg = error instanceof Error ? error.message : String(error);
+            vscode.window.showErrorMessage(`Failed to load server:${errorMsg}`);
 
         }
     }
 
-    private _getToolsPanelHtml(webview: vscode.Webview){
+    //获取连接状态
+    private async _handleGetStatus() {
+        const isConnected = this._serverManager.isConnected;
+        const capabilities = isConnected ? { tools: true, prompts: true, resources: true } : {};
+        const configuration = vscode.workspace.getConfiguration('mcp-tester');
+        const servers = configuration.get<any[]>('servers') || [];
+        this._view?.webview.postMessage({
+            type: 'connection-status',
+            status: isConnected ? 'connected' : 'disconnected',
+            capabilities,
+            savedServers: servers
+        });
+    }
+
+    private async _handleOpenToolsPanel() {
+        try {
+
+            const panel = vscode.window.createWebviewPanel(
+                'mcpToolsPanel',
+                'MCP-Tester',
+                vscode.ViewColumn.One,
+
+                {
+                    enableScripts: true,
+                    retainContextWhenHidden: true,
+                    localResourceRoots: [
+                        this._context.extensionUri,
+                        vscode.Uri.joinPath(this._context.extensionUri, 'webview-dist')
+                    ]
+                }
+            );
+
+            panel.onDidDispose(() => {
+                this._toolsPanel = undefined;
+            },null, this._context.subscriptions);
+            //加载HTML及切换视图
+            const html = this._getToolsPanelHtml(panel.webview);
+            panel.webview.html = html;
+            this._toolsPanel = panel;
+
+            panel.webview.onDidReceiveMessage(async (message) => { 
+                console.log(`received message:${message}`);
+
+                try{
+                    switch (message.type) {
+
+                        case 'webview-ready':
+                            const isConnected = this._serverManager.isConnected;
+                            const capabilities = isConnected ? { tools: true, prompts: true, resources: true } : {};
+                            const configuration = vscode.workspace.getConfiguration('mcp-tester');
+                            const servers = configuration.get<any[]>('servers') || [];
+                            panel.webview.postMessage({
+                                type: 'connection-status',
+                                status: isConnected ? 'connected' : 'disconnected',
+                                capabilities,
+                                savedServers: servers
+                            });
+
+                            if(isConnected){
+                                await this._handleListTools(panel.webview);
+                            }
+                            break;
+                        case 'call-tool':
+                            await this._handleCallTool(message.name, message.parameters);
+                            break;
+
+                        case 'list-resources':
+                            await this._handleListResources();
+                            break;
+                        case 'read-resource':
+                            await this._handleReadResource(message.uri);
+                            break;
+                        case 'list-prompts':
+                            await this._handleListPrompts();
+                            break;
+                        case 'ping-server':
+                            await this._handlePing();
+                            break;
+                        default:
+                            console.error(`unknown message type:${message.type}`);
+                            break;
+                    }
+                }catch(error){
+                    const errorMsg = error instanceof Error ? error.message : String(error);
+                    console.error(errorMsg);
+                }
+            });
+
+
+        }catch (error) {
+            const errorMsg = error instanceof Error ? error.message : String(error);
+            vscode.window.showErrorMessage(`Failed to open tools panel:${errorMsg}`);
+        }
+    }
+
+    private _getToolsPanelHtml(webview: vscode.Webview) {
         const vueDistUri = vscode.Uri.joinPath(this._context.extensionUri, 'webview-dist');
         const mainJs = webview.asWebviewUri(vscode.Uri.joinPath(vueDistUri, 'assets', 'main.js'));
         const mainCss = webview.asWebviewUri(vscode.Uri.joinPath(vueDistUri, 'assets', 'main.css'));
