@@ -31,16 +31,25 @@ export class MCPTesterProvider implements vscode.WebviewViewProvider {
                 try {
                     switch (data.type) {
                         case 'connect':
-                            await this._serverManager.connect(data.config);
+                            await this._handleConnect(data.config);
                             break;
                         case 'disconnect':
-                            await this._serverManager.disconnect();
+                            await this._handleDisconnect();
                             break;
-                        case 'startServer':
-                            await this._serverManager.startServer();
+                        case 'get-status':
+                            await this._handleGetStatus();
                             break;
-                        case 'listTools':
-                            const tools = await this._serverManager.listTools();
+                        case 'delete-server':
+                            await this._handleDeleteServer(data.name);
+                            break;
+                        case 'load-server':
+                            await this._handleLoadServer(data.name);
+                            break;
+                        case 'open-tools-panel':
+                             this._handleOpenToolsPanel();
+                             break;
+                        default:
+                            console.error(`Unhandled message type: ${data.type}`);
                     }
                 } catch (error) {
 
@@ -58,6 +67,14 @@ export class MCPTesterProvider implements vscode.WebviewViewProvider {
             this._context.subscriptions
         );
 
+    }
+
+    public show() {
+        if(this._view){
+            this._view.show?.(true)
+        }else{
+            vscode.commands.executeCommand('mcp-explorer.focus');
+        }
     }
 
     //获取提示词列表
