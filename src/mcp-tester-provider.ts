@@ -77,6 +77,62 @@ export class MCPTesterProvider implements vscode.WebviewViewProvider {
         }
     }
 
+    public async connectToServer(){
+        const config = await this._promptForMCPConfig();
+        if(config){
+            await this._handleConnect(config);
+        }
+    }
+
+    private async _promptForMCPConfig(){
+        const transportType = await vscode.window.showQuickPick(['stdio', 'sse', 'streamable-http'],{placeHolder:'Select transport type'});
+        if (!transportType) {
+            return;
+        }
+        switch(transportType){
+            case 'stdio':
+                const command = await vscode.window.showInputBox({
+                    placeHolder: 'Enter command',
+                    prompt: 'Enter command to run MCP server'
+                });
+                if(!command){
+                    return null;
+                }
+
+                let config:any = {type:'stdio',command};
+                const envInput = await vscode.window.showInputBox({
+                    placeHolder: '{param1:value1,param2:value2}',
+                    prompt: 'Enter environment variables'
+                });
+
+                if(envInput){
+                    try {
+                        const env = JSON.parse(envInput);
+                        config.env = env;
+                    } catch (error) {
+                        vscode.window.showErrorMessage(`Invalid environment variables:${error}`);
+                    }
+                }
+
+                return config;
+            case 'sse':
+                const sseUrl = await vscode.window.showInputBox({
+                    placeHolder: 'http://example.com/sse',
+                    prompt: 'Enter SSE URL'
+                });
+                return sseUrl ? {type:'sse',sseUrl} : null;
+
+            case 'streamable-http':
+                const url = await vscode.window.showInputBox({
+                    placeHolder: 'http://example.com/http',
+                    prompt: 'Enter HTTP URL'
+                });
+                return url ? {type:'streamable-http',url} : null;
+            default:
+                return null;
+        }
+    }
+
     //获取提示词列表
     private async _handleListPrompts() {
         try {
