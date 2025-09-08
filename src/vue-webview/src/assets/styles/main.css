@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base { 
+
+    html{
+        font-family: var(--vscode-font-family);
+        background-color: var(--vscode-editor-background);
+        color: var(--vscode-editor-foreground);
+    }
+
+    body{
+        @apply m-0 p-0 text-sm;
+    }
+
+    #app{
+        @apply h-screen;
+    }
+}
+
+@layer components { 
+    .btn-primary{ 
+        @apply bg-vscode-button-bg hover:bg-vscode-button-hover text-white px-3 py-1.5 rounded text-sm transition-colors;
+    }
+
+    .btn-secondary{ 
+        @apply bg-vscode-button-secondary text-vscode-foreground px-3 py-1.5 rounded text-sm transition-colors border border-vscode-panel-border;
+    }
+
+    .input-field{
+        @apply w-full px-2 py-1.5 bg-vscode-input-bg border border-vscode-input-border rounded text-sm focus:border-vscode-button-bg focus:outline-none;
+    }
+
+    .card{
+        @apply bg-vscode-panel-bg border border-vscode-panel-border rounded p-4 mb-4;
+    }
+}
+

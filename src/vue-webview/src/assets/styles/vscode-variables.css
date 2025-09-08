@@ -1,0 +1,31 @@
+: root {
+/* VS Code Theme Integration */
+-vscode-font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC" , "Segoe UI", system-ui, "Ubuntu","Droid Sans",sans-serif;
+-vscode-editor-background: var(--vscode-editorBackground);
+--vscode-editor-foreground: var(-vscode-editorForeground);
+-vscode-panel-background: var (--vscode-panelBackground);
+--vscode-panel-border: var(—-vscode-panelBorder);
+--vscode-button-background: var (--vscode-button-background) ;
+--vscode-button-hover: var(-vscode-button-hoverBackground);
+-vscode-button-secondary: var(--vscode-button-secondaryBackground) ;
+-vscode-input-background: !--vscode-input-background;
+--vscode-input-border: var(-vscode-input-border);
+--vscode-input-foreground: var(-vscode-input-foreground);
+--vscode-Light-input-background： #ffffff；
+—vscode-Light-input-foreground： #000000；
+--vscode-dark-input-background： #3c3c3c；
+—vscode-dark-input-foreground:
+#CCCccc;
+-vscode-list-hoverBackground: var(—vscode-list-hoverBackground) ;
+-vscode-list-activeSelectionBackground: var(—vscode-list-activeSelectionBackground);
+--vscode-errorForeground: var(-vscode-errorForeground);
+-vscode-warningForeground: var(-vscode-warningForeground);
+-vscode-infoForeground: var(—vscode-infoForeground);
+-vscode-successForeground: var(-vscode-testing-iconPassed)
+
+color-scheme: dark;
+}
+
+.vscode-light {
+    color-scheme: light; 
+}
