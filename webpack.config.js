@@ -54,8 +54,8 @@ module.exports = {
         ]
     },
     
-    // 指定 source map 类型，'nosource-source-map' 会创建 source map 但不包含源代码内容
-    devtool: 'nosource-source-map',
+    // 指定 source map 类型，'source-map' 会创建外部 source map 文件
+    devtool: 'source-map',
     
     // 配置基础设施日志级别
     infrastructureLogging:{

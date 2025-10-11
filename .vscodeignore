@@ -1,0 +1,40 @@
+# Ignore all development dependencies
+node_modules/
+src/vue-webview/node_modules/
+inspector/
+
+# Ignore TypeScript source files
+src/**/*.ts
+!src/**/*.d.ts
+
+# Ignore Vue source files but keep build artifacts
+src/vue-webview/src/
+src/vue-webview/index.html
+src/vue-webview/vite.config.ts
+src/vue-webview/tailwind.config.js
+src/vue-webview/postcss.config.js
+src/vue-webview/tsconfig*.json
+src/vue-webview/package*.json
+
+# Ignore development configuration
+.vscode/
+.git/
+.gitignore
+*.log
+npm-debug.log*
+.eslintrc.*
+tsconfig*.json
+webpack.config.js
+
+# Ignore test files
+**/*.test.*
+**/__tests__/**
+**/test/**
+
+# Ignore development scripts
+scripts/
+
+# Keep necessary files:
+# - package.json, README.md, INSTALL.md
+# - out/ (compiled extension code)
+# - src/webview-dist/ (Vue build artifacts)

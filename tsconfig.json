@@ -44,6 +44,8 @@
         // 排除 client-vite-build 目录
         "client-vite-build",
         // 排除 src/vue-webview 目录
-        "src/vue-webview"
+        "src/vue-webview",
+        // 排除 inspector 目录
+        "inspector"
     ]
 }

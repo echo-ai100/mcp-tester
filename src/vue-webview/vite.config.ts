@@ -1,7 +1,6 @@
 import {defineConfig} from 'vite'
 import vue from '@vitejs/plugin-vue'
 import path from 'path'
-import { strict } from 'assert'
 
 export default defineConfig({
   plugins: [vue()],
@@ -13,7 +12,7 @@ export default defineConfig({
   base:'./',
   build:{
     outDir:'../webview-dist',
-    empytOutDir:true,
+    emptyOutDir:true,
     rollupOptions:{
       input:{
         main:path.resolve(__dirname, 'index.html'),

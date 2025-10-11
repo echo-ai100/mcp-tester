@@ -2,8 +2,8 @@
     "name": "mcp-tester",
     "displayName": "MCP Tester",
     "description": "A simple mcp tester for vscode",
-    "version": "0.0.1",
-    "publisher": "echo.ai",
+    "version": "0.0.2",
+    "publisher": "echoai",
     "engines": {
         "vscode": "^1.74.0"
     },
@@ -32,6 +32,51 @@
             {
                 "command": "mcp-tester.connect",
                 "title": "Connect to MCP Server",
+                "category": "MCP"
+            },
+            {
+                "command": "mcp-tester.disconnect",
+                "title": "Disconnect from MCP Server",
+                "category": "MCP"
+            },
+            {
+                "command": "mcp-tester.listTools",
+                "title": "List Tools",
+                "category": "MCP"
+            },
+            {
+                "command": "mcp-tester.listResources",
+                "title": "List Resources",
+                "category": "MCP"
+            },
+            {
+                "command": "mcp-tester.listPrompts",
+                "title": "List Prompts",
+                "category": "MCP"
+            },
+            {
+                "command": "mcp-tester.ping",
+                "title": "Ping Server",
+                "category": "MCP"
+            },
+            {
+                "command": "mcp-tester.status",
+                "title": "Show Connection Status",
+                "category": "MCP"
+            },
+            {
+                "command": "mcp-tester.clearHistory",
+                "title": "Clear Request History",
+                "category": "MCP"
+            },
+            {
+                "command": "mcp-tester.exportConfig",
+                "title": "Export Server Configuration",
+                "category": "MCP"
+            },
+            {
+                "command": "mcp-tester.importConfig",
+                "title": "Import Server Configuration",
                 "category": "MCP"
             }
         ],
@@ -81,86 +126,118 @@
                             "type": "string",
                             "description": "The name of the server"
                         },
-                        "type":{
+                        "type": {
                             "type": "string",
                             "enum": [
                                 "stdio",
                                 "sse",
                                 "streamable http"
                             ],
-                            "description":"transport type"
+                            "description": "transport type"
                         },
-                        "command":{
+                        "command": {
                             "type": "string",
                             "description": "command to run the server(for the stdio transport)"
                         },
-                        "url":{
+                        "url": {
                             "type": "string",
                             "description": "url to connect to the server(for the sse and streamable http transports)"
-
                         },
-                        "env":{
+                        "env": {
                             "type": "object",
                             "description": "environment variables to pass to the server(for the stdio transport)"
                         }
                     }
                 },
-                "default":[],
+                "default": [],
                 "description": "the list of predefined MCP servers"
             },
-            "mcp-tester.timeout":{
+            "mcp-tester.timeout": {
                 "type": "number",
                 "default": 3000,
                 "description": "the timeout for the MCP server to respond"
             },
-            "mcp-tester.maxHistory":{
-                "type":"number",
+            "mcp-tester.maxHistory": {
+                "type": "number",
                 "default": 100,
                 "description": "the maximum number of history entries to keep"
             },
-            "mcp-tester.enableLogging":{
-                "type":"boolean",
+            "mcp-tester.enableLogging": {
+                "type": "boolean",
                 "default": false,
                 "description": "whether to enable logging"
             },
-            "mcp-tester.maxRetryAttempts":{
-                "type":"number",
+            "mcp-tester.maxRetryAttempts": {
+                "type": "number",
                 "default": 3,
                 "description": "the maximum number of retry attempts"
             },
-            "mcp-tester.retryDelay":{
-                "type":"number",
+            "mcp-tester.retryDelay": {
+                "type": "number",
                 "default": 1000,
                 "description": "the delay between retry attempts in milliseconds"
             }
         }
     },
     "scripts": {
-        "vscode:prepublish": "num run package",
-        "compile": "webpack",
+        "compile": "npm run build-webview && webpack",
         "watch": "webpack --watch",
-        "package": "webpack --mode production --devtool hidden-source-map",
-        "pretest": "nup run compile && npm run lint",
+        "package": "npm run build-webview && webpack --mode production --devtool hidden-source-map",
+        "pretest": "npm run compile && npm run lint",
         "lint": "eslint ./src --ext ts",
         "test": "node ./out/test/runTest.js",
-        "build":"npm run compile"
+        "build": "npm run compile",
+        "build-webview": "cd src/vue-webview && npm run build",
+        "dev-webview": "cd src/vue-webview && npm run dev",
+        "install-webview": "cd src/vue-webview && npm install"
     },
     "devDependencies": {
-        "@types/node":"16.x",
-        "@types/vscode":"^1.74.0",
-        "@typescript-eslint/eslint-plugin":"^5.45.0",
-        "@typescript-eslint/parser":"^5.45.0",
-        "eslint":"^8.28.0",
-        "ts-loader":"^9.5.2",
-        "typescript":"^4.9.4",
-        "vsce":"^2.15.0",
-        "webpack":"5.100.2",
-        "webpack-cli":"^6.0.1"
+        "@types/node": "^22.17.0",
+        "@types/prismjs": "^1.26.5",
+        "@types/react": "^18.3.23",
+        "@types/react-dom": "^18.3.0",
+        "@types/shell-quote": "^1.7.5",
+        "@types/vscode": "^1.74.0",
+        "@typescript-eslint/eslint-plugin": "^5.45.0",
+        "@typescript-eslint/parser": "^5.45.0",
+        "@vscode/vsce": "^3.6.2",
+        "eslint": "^8.28.0",
+        "ts-loader": "^9.5.2",
+        "typescript": "^4.9.4",
+        "vsce": "^2.15.0",
+        "webpack": "5.100.2",
+        "webpack-cli": "^6.0.1"
     },
     "dependencies": {
-        "@modelcontextprotocol/sdk":"^1.13.1",
-        "cors":"^2.8.5",
-        "express":"^4.18.2",
-        "ws":"^8.13.0"
+        "@modelcontextprotocol/sdk": "^1.18.0",
+        "@radix-ui/react-checkbox": "^1.1.4",
+        "@radix-ui/react-dialog": "^1.1.3",
+        "@radix-ui/react-icons": "^1.3.0",
+        "@radix-ui/react-label": "^2.1.0",
+        "@radix-ui/react-popover": "^1.1.3",
+        "@radix-ui/react-select": "^2.1.2",
+        "@radix-ui/react-slot": "^1.1.0",
+        "@radix-ui/react-switch": "^1.2.6",
+        "@radix-ui/react-tabs": "^1.1.1",
+        "@radix-ui/react-toast": "^1.2.6",
+        "@radix-ui/react-tooltip": "^1.1.8",
+        "ajv": "^6.12.6",
+        "class-variance-authority": "^0.7.0",
+        "clsx": "^2.1.1",
+        "cmdk": "^1.0.4",
+        "cors": "^2.8.5",
+        "express": "^4.18.2",
+        "lucide-react": "^0.523.0",
+        "node-fetch": "^3.3.2",
+        "open": "^10.2.0",
+        "prismjs": "^1.30.0",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
+        "react-simple-code-editor": "^0.14.1",
+        "shell-quote": "^1.8.3",
+        "spawn-rx": "^5.1.2",
+        "tailwind-merge": "^2.5.3",
+        "ws": "^8.13.0",
+        "zod": "^3.25.76"
     }
 }

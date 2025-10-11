@@ -31,7 +31,7 @@
                     <div>
                         <label class="block text-sm font-medium mb-1">Command</label>
                         <input v-model="config.command" type="text" class="w-full input-field"
-                            placeholder="node server.js"></input>
+                            placeholder="node server.js">
                     </div>
                     <div>
                         <label class="block text-sm font-medium mb-1">Environment Variables(JOSN)</label>
@@ -51,7 +51,7 @@
                 <div>
                     <label class="block text-sm font-medium mb-1">Server Name</label>
                     <input v-model="serverName" type="text" class="w-full input-field"
-                        placeholder="Server Name"></input>
+                        placeholder="Server Name">
                 </div>
             </div>
             <div class="mt-6 space-y-2">
@@ -61,7 +61,7 @@
                     Disconnect
                 </button>
             </div>
-            <div v-if="config.length > 0" class="mt-6">
+            <div v-if="configs.length > 0" class="mt-6">
                 <h3 class="text-sm font-medium mb-3">Saved Servers</h3>
                 <div class="space-y-2">
                     <div v-for="config in configs" :key="config.name"
@@ -73,7 +73,7 @@
                                 <div class="text-xs text-vscode-descriptinForeground">{{ config.type }}{{ config.url ?
                                     ':' + config.url : '' }}</div>
                             </div>
-                            <button @click.stop="deleteConfig(config.name!)" class="text-red-400 hover:text-red-300 p-1"
+                            <button @click.stop="deleteConfig(config.name || '')" class="text-red-400 hover:text-red-300 p-1"
                                 title="Delete">x</button>
                         </div>
                     </div>
@@ -82,3 +82,117 @@
         </div>
     </div>
 </template>
+
+<script setup lang="ts">
+import { ref, computed, watch, onMounted } from 'vue';
+
+// 响应式数据
+const isConnected = ref(false);
+const transportType = ref('stdio');
+const serverName = ref('');
+const envVarsInput = ref('');
+const configs = ref<any[]>([]);
+
+// 配置对象
+const config = ref({
+  command: '',
+  url: '',
+  env: {} as Record<string, string>
+});
+
+// 计算属性
+const canConnect = computed(() => {
+  if (transportType.value === 'stdio') {
+    return config.value.command.trim() !== '' && serverName.value.trim() !== '';
+  } else {
+    return config.value.url.trim() !== '' && serverName.value.trim() !== '';
+  }
+});
+
+// 监听环境变量输入变化
+watch(envVarsInput, (newValue) => {
+  try {
+    config.value.env = newValue ? JSON.parse(newValue) : {};
+  } catch {
+    // 忽略无效 JSON
+  }
+});
+
+// 方法
+const handleConnect = () => {
+  if (!canConnect.value) return;
+  
+  const serverConfig = {
+    name: serverName.value,
+    type: transportType.value,
+    command: transportType.value === 'stdio' ? config.value.command : undefined,
+    url: transportType.value !== 'stdio' ? config.value.url : undefined,
+    env: transportType.value === 'stdio' ? config.value.env : undefined
+  };
+  
+  // 发送连接请求
+  postMessage({
+    type: 'connect',
+    data: serverConfig
+  });
+};
+
+const disconnect = () => {
+  postMessage({
+    type: 'disconnect'
+  });
+};
+
+const loadConfig = (configToLoad: any) => {
+  transportType.value = configToLoad.type;
+  serverName.value = configToLoad.name;
+  
+  if (configToLoad.type === 'stdio') {
+    config.value.command = configToLoad.command || '';
+    config.value.env = configToLoad.env || {};
+    envVarsInput.value = JSON.stringify(configToLoad.env || {}, null, 2);
+  } else {
+    config.value.url = configToLoad.url || '';
+  }
+};
+
+const deleteConfig = (name: string) => {
+  postMessage({
+    type: 'deleteConfig',
+    data: { name }
+  });
+};
+
+// 通信函数
+const postMessage = (message: any) => {
+  if (typeof window !== 'undefined' && (window as any).vscode) {
+    (window as any).vscode.postMessage(message);
+  } else {
+    console.log('Would send message:', message);
+  }
+};
+
+// 监听来自扩展的消息
+const handleMessage = (event: MessageEvent) => {
+  const message = event.data;
+  switch (message.type) {
+    case 'connectionStatusChanged':
+      isConnected.value = message.data.connected;
+      break;
+    case 'configsUpdated':
+      configs.value = message.data || [];
+      break;
+  }
+};
+
+// 生命周期
+onMounted(() => {
+  if (typeof window !== 'undefined') {
+    window.addEventListener('message', handleMessage);
+    
+    // 请求初始数据
+    postMessage({ type: 'getConfigs' });
+    postMessage({ type: 'getConnectionStatus' });
+  }
+});
+</script>
