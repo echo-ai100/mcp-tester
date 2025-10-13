@@ -580,21 +580,29 @@ function postMessage(message: any) {
 // 事件处理器
 function handleConnect(config: any) {
   connectionStatus.value = 'connecting';
-  postMessage({ type: 'connect', config });
+  
+  // 确保传递的配置是完全可序列化的
+  const safeConfig = JSON.parse(JSON.stringify(config));
+  
+  postMessage({ type: 'connect', config: safeConfig });
 }
 
 // 配置连接
 function handleConfiguredConnect() {
-  // 构建配置对象
-  const serverConfig = {
-    name: serverName.value,
-    type: transportType.value,
-    command: transportType.value === 'stdio' ? config.command : undefined,
-    args: transportType.value === 'stdio' ? config.args : undefined,
-    url: transportType.value !== 'stdio' ? config.url : undefined,
-    env: transportType.value === 'stdio' ? config.env : undefined,
-    customHeaders: transportType.value !== 'stdio' ? config.customHeaders : undefined
+  // 构建配置对象，确保所有值都是可序列化的
+  const serverConfig: any = {
+    name: serverName.value.trim(),
+    type: transportType.value
   };
+  
+  if (transportType.value === 'stdio') {
+    serverConfig.command = config.command.trim();
+    serverConfig.args = [...config.args]; // 创建数组副本
+    serverConfig.env = { ...config.env }; // 创建对象副本
+  } else {
+    serverConfig.url = config.url.trim();
+    serverConfig.customHeaders = { ...config.customHeaders }; // 创建对象副本
+  }
   
   handleConnect(serverConfig);
 }
@@ -619,7 +627,17 @@ function loadServerConfig(server: any) {
 
 // 连接到已保存的服务器
 function connectToSavedServer(server: any) {
-  handleConnect(server);
+  // 创建一个安全的配置对象，只包含可序列化的属性
+  const safeServerConfig = {
+    name: server.name,
+    type: server.type,
+    command: server.command,
+    args: server.args,
+    url: server.url,
+    env: server.env,
+    customHeaders: server.customHeaders
+  };
+  handleConnect(safeServerConfig);
 }
 
 function handleDisconnect() {
@@ -635,10 +653,13 @@ function handleListTools() {
 }
 
 function handleCallTool(toolName: string, parameters: any) {
+  // 确保参数是可序列化的
+  const safeParameters = JSON.parse(JSON.stringify(parameters));
+  
   postMessage({ 
     type: 'call-tool', 
     name: toolName, 
-    parameters 
+    parameters: safeParameters
   });
 }
 
@@ -655,10 +676,13 @@ function handleListPrompts() {
 }
 
 function handleGetPrompt(name: string, args: Record<string, string>) {
+  // 确保参数是可序列化的
+  const safeArgs = JSON.parse(JSON.stringify(args));
+  
   postMessage({ 
     type: 'get-prompt', 
     name, 
-    arguments: args 
+    arguments: safeArgs
   });
 }
 
