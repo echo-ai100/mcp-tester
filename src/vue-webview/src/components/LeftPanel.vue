@@ -112,9 +112,14 @@ const canConnect = computed(() => {
 // 监听环境变量输入变化
 watch(envVarsInput, (newValue) => {
   try {
-    config.value.env = newValue ? JSON.parse(newValue) : {};
+    if (newValue && newValue.trim()) {
+      config.value.env = JSON.parse(newValue);
+    } else {
+      config.value.env = {};
+    }
   } catch {
     // 忽略无效 JSON
+    config.value.env = {};
   }
 });
 

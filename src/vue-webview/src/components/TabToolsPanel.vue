@@ -186,6 +186,9 @@ function setupMessageHandlers() {
         case 'tools-list':
           tools.value = message.tools || [];
           loadingTools.value = false;
+          if (message.error) {
+            error.value = `获取工具列表失败: ${message.error}`;
+          }
           break;
           
         case 'tool-result':
@@ -200,6 +203,9 @@ function setupMessageHandlers() {
         case 'resources-list':
           resources.value = message.resources || [];
           loadingResources.value = false;
+          if (message.error) {
+            error.value = `获取资源列表失败: ${message.error}`;
+          }
           break;
           
         case 'resource-templates-list':
@@ -213,6 +219,9 @@ function setupMessageHandlers() {
         case 'prompts-list':
           prompts.value = message.prompts || [];
           loadingPrompts.value = false;
+          if (message.error) {
+            error.value = `获取提示词列表失败: ${message.error}`;
+          }
           break;
           
         case 'prompt-content':

@@ -556,17 +556,27 @@ watch(argsInput, (newValue: string) => {
 
 watch(envVarsInput, (newValue: string) => {
   try {
-    config.env = newValue ? JSON.parse(newValue) : {};
+    if (newValue && newValue.trim()) {
+      config.env = JSON.parse(newValue);
+    } else {
+      config.env = {};
+    }
   } catch {
     // 忽略无效 JSON
+    config.env = {};
   }
 });
 
 watch(headersInput, (newValue: string) => {
   try {
-    config.customHeaders = newValue ? JSON.parse(newValue) : {};
+    if (newValue && newValue.trim()) {
+      config.customHeaders = JSON.parse(newValue);
+    } else {
+      config.customHeaders = {};
+    }
   } catch {
     // 忽略无效 JSON
+    config.customHeaders = {};
   }
 });
 
@@ -582,7 +592,7 @@ function handleConnect(config: any) {
   connectionStatus.value = 'connecting';
   
   // 确保传递的配置是完全可序列化的
-  const safeConfig = JSON.parse(JSON.stringify(config));
+  const safeConfig = config ? JSON.parse(JSON.stringify(config)) : {};
   
   postMessage({ type: 'connect', config: safeConfig });
 }
@@ -654,7 +664,7 @@ function handleListTools() {
 
 function handleCallTool(toolName: string, parameters: any) {
   // 确保参数是可序列化的
-  const safeParameters = JSON.parse(JSON.stringify(parameters));
+  const safeParameters = parameters ? JSON.parse(JSON.stringify(parameters)) : {};
   
   postMessage({ 
     type: 'call-tool', 
@@ -677,7 +687,7 @@ function handleListPrompts() {
 
 function handleGetPrompt(name: string, args: Record<string, string>) {
   // 确保参数是可序列化的
-  const safeArgs = JSON.parse(JSON.stringify(args));
+  const safeArgs = args ? JSON.parse(JSON.stringify(args)) : {};
   
   postMessage({ 
     type: 'get-prompt', 

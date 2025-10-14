@@ -277,8 +277,15 @@ export class MCPServerManager extends EventEmitter {
             historyItem.response = response;
             this._addToHistory(historyItem);
             
-            if (schema) {
-                return schema.parse(response);
+            // 安全的schema验证：确保schema存在且有parse方法
+            if (schema && schema !== null && schema !== undefined && typeof schema === 'object' && typeof schema.parse === 'function') {
+                try {
+                    return schema.parse(response);
+                } catch (parseError) {
+                    // 如果解析失败，记录错误但仍返回原始响应
+                    console.error('Schema解析失败:', parseError);
+                    return response;
+                }
             }
             return response;
         } catch (error) {
@@ -304,12 +311,22 @@ export class MCPServerManager extends EventEmitter {
 
     //列出所有工具
     public async listTools(cursor?: string): Promise<ListToolsResult> {
+        if (!this._client || !this._isConnected) {
+            throw new Error('客户端未连接');
+        }
+        
         const request: ClientRequest = {
             method: "tools/list" as const,
             params: cursor ? { cursor } : {}
         };
         
-        return this._makeRequest(request);
+        const result = await this._makeRequest<ListToolsResult>(request);
+        
+        // 确保返回的数据结构正确
+        return {
+            tools: result?.tools || [],
+            nextCursor: result?.nextCursor
+        };
     }
 
     //调用工具
@@ -328,22 +345,40 @@ export class MCPServerManager extends EventEmitter {
 
     //列出所有资源
     public async listResources(cursor?: string): Promise<ListResourcesResult> {
+        if (!this._client || !this._isConnected) {
+            throw new Error('客户端未连接');
+        }
+        
         const request: ClientRequest = {
             method: "resources/list" as const,
             params: cursor ? { cursor } : {}
         };
         
-        return this._makeRequest(request);
+        const result = await this._makeRequest<ListResourcesResult>(request);
+        
+        return {
+            resources: result?.resources || [],
+            nextCursor: result?.nextCursor
+        };
     }
     
     //列出资源模板
     public async listResourceTemplates(cursor?: string): Promise<ListResourceTemplatesResult> {
+        if (!this._client || !this._isConnected) {
+            throw new Error('客户端未连接');
+        }
+        
         const request: ClientRequest = {
             method: "resources/templates/list" as const,
             params: cursor ? { cursor } : {}
         };
         
-        return this._makeRequest(request);
+        const result = await this._makeRequest<ListResourceTemplatesResult>(request);
+        
+        return {
+            resourceTemplates: result?.resourceTemplates || [],
+            nextCursor: result?.nextCursor
+        };
     }
     
     //读取资源
@@ -378,12 +413,21 @@ export class MCPServerManager extends EventEmitter {
 
     //列出所有提示词
     public async listPrompts(cursor?: string): Promise<ListPromptsResult> {
+        if (!this._client || !this._isConnected) {
+            throw new Error('客户端未连接');
+        }
+        
         const request: ClientRequest = {
             method: "prompts/list" as const,
             params: cursor ? { cursor } : {}
         };
         
-        return this._makeRequest(request);
+        const result = await this._makeRequest<ListPromptsResult>(request);
+        
+        return {
+            prompts: result?.prompts || [],
+            nextCursor: result?.nextCursor
+        };
     }
     
     //获取提示词

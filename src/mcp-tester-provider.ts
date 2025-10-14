@@ -409,19 +409,23 @@ export class MCPTesterProvider implements vscode.WebviewViewProvider {
 
     private async _handleListTools(cursor?: string): Promise<void> {
         try {
+            if (!this._serverManager.isConnected) {
+                throw new Error('未连接到MCP服务器');
+            }
             const result = await this._serverManager.listTools(cursor);
             this._sendToWebview({
                 type: 'tools-list',
-                tools: result.tools,
-                nextCursor: result.nextCursor
+                tools: result?.tools || [],
+                nextCursor: result?.nextCursor
             });
         } catch (error) {
             const errorMsg = error instanceof Error ? error.message : String(error);
+            console.error('获取工具列表失败:', errorMsg);
             vscode.window.showErrorMessage(`获取工具列表失败: ${errorMsg}`);
             this._sendToWebview({
-                type: 'error',
-                error: errorMsg,
-                context: 'list-tools'
+                type: 'tools-list',
+                tools: [],
+                error: errorMsg
             });
         }
     }
@@ -447,29 +451,47 @@ export class MCPTesterProvider implements vscode.WebviewViewProvider {
 
     private async _handleListResources(cursor?: string): Promise<void> {
         try {
+            if (!this._serverManager.isConnected) {
+                throw new Error('未连接到MCP服务器');
+            }
             const result = await this._serverManager.listResources(cursor);
             this._sendToWebview({
                 type: 'resources-list',
-                resources: result.resources,
-                nextCursor: result.nextCursor
+                resources: result?.resources || [],
+                nextCursor: result?.nextCursor
             });
         } catch (error) {
             const errorMsg = error instanceof Error ? error.message : String(error);
+            console.error('获取资源列表失败:', errorMsg);
             vscode.window.showErrorMessage(`获取资源列表失败: ${errorMsg}`);
+            this._sendToWebview({
+                type: 'resources-list',
+                resources: [],
+                error: errorMsg
+            });
         }
     }
 
     private async _handleListResourceTemplates(cursor?: string): Promise<void> {
         try {
+            if (!this._serverManager.isConnected) {
+                throw new Error('未连接到MCP服务器');
+            }
             const result = await this._serverManager.listResourceTemplates(cursor);
             this._sendToWebview({
                 type: 'resource-templates-list',
-                resourceTemplates: result.resourceTemplates,
-                nextCursor: result.nextCursor
+                resourceTemplates: result?.resourceTemplates || [],
+                nextCursor: result?.nextCursor
             });
         } catch (error) {
             const errorMsg = error instanceof Error ? error.message : String(error);
+            console.error('获取资源模板列表失败:', errorMsg);
             vscode.window.showErrorMessage(`获取资源模板列表失败: ${errorMsg}`);
+            this._sendToWebview({
+                type: 'resource-templates-list',
+                resourceTemplates: [],
+                error: errorMsg
+            });
         }
     }
 
@@ -515,15 +537,24 @@ export class MCPTesterProvider implements vscode.WebviewViewProvider {
 
     private async _handleListPrompts(cursor?: string): Promise<void> {
         try {
+            if (!this._serverManager.isConnected) {
+                throw new Error('未连接到MCP服务器');
+            }
             const result = await this._serverManager.listPrompts(cursor);
             this._sendToWebview({
                 type: 'prompts-list',
-                prompts: result.prompts,
-                nextCursor: result.nextCursor
+                prompts: result?.prompts || [],
+                nextCursor: result?.nextCursor
             });
         } catch (error) {
             const errorMsg = error instanceof Error ? error.message : String(error);
+            console.error('获取提示词列表失败:', errorMsg);
             vscode.window.showErrorMessage(`获取提示词列表失败: ${errorMsg}`);
+            this._sendToWebview({
+                type: 'prompts-list',
+                prompts: [],
+                error: errorMsg
+            });
         }
     }
 

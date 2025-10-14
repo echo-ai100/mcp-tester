@@ -159,6 +159,10 @@ const executeTool = async () => {
   
   executing.value = true;
   try {
+    // 确保 toolArguments.value 已定义
+    if (!toolArguments.value) {
+      toolArguments.value = '{}';
+    }
     const args = JSON.parse(toolArguments.value);
     emit('call-tool', selectedTool.value.name, args);
     showCallModal.value = false;

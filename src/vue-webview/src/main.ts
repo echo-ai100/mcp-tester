@@ -3,6 +3,11 @@ import { createPinia } from 'pinia';
 import MainApp from './components/MainApp.vue';
 import './assets/styles/main.css';
 
+// 确保JSON对象存在
+if (typeof JSON === 'undefined') {
+    console.error('JSON is not defined in this environment!');
+}
+
 const app = createApp(MainApp);
 app.use(createPinia());
 app.mount('#app');
