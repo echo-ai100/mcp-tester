@@ -257,6 +257,7 @@ export class MCPServerManager extends EventEmitter {
     }
 
     // 发送请求的通用方法
+    // 使用一个宽松的schema来避免SDK内部的parse错误
     private async _makeRequest<T>(request: ClientRequest, schema?: any): Promise<T> {
         if (!this._client || !this._isConnected) {
             throw new Error('客户端未连接');
@@ -270,23 +271,15 @@ export class MCPServerManager extends EventEmitter {
         };
         
         try {
-            const timeout = vscode.workspace.getConfiguration('mcp-tester').get('timeout', 30000);
-            // @ts-ignore - 忽略类型错误
-            const response = await this._client.request(request) as T;
+            // 创建一个宽松的passthrough schema，接受任何对象
+            const passthroughSchema = z.object({}).passthrough();
+            
+            // 使用SDK的request方法，但传入宽松的schema
+            const response = await this._client.request(request, passthroughSchema) as T;
             
             historyItem.response = response;
             this._addToHistory(historyItem);
             
-            // 安全的schema验证：确保schema存在且有parse方法
-            if (schema && schema !== null && schema !== undefined && typeof schema === 'object' && typeof schema.parse === 'function') {
-                try {
-                    return schema.parse(response);
-                } catch (parseError) {
-                    // 如果解析失败，记录错误但仍返回原始响应
-                    console.error('Schema解析失败:', parseError);
-                    return response;
-                }
-            }
             return response;
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : String(error);
