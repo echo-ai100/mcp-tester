@@ -357,6 +357,17 @@
             </div>
           </div>
         </div>
+        
+        <!-- 工具执行结果展示区域 -->
+        <div v-if="toolExecutionResult && activeTab === 'tools'" class="border-t border-vscode-panel-border p-4 bg-vscode-panel-bg">
+          <div class="flex justify-between items-center mb-2">
+            <h4 class="text-sm font-medium text-vscode-foreground">执行结果</h4>
+            <button @click="clearToolResult" class="text-vscode-foreground hover:text-red-400 text-xs">
+              清除
+            </button>
+          </div>
+          <pre class="bg-vscode-editor-background p-3 rounded text-xs text-vscode-editor-foreground overflow-auto max-h-40">{{ formatToolResult(toolExecutionResult) }}</pre>
+        </div>
       </div>
       
       <!-- 主视图 -->
@@ -455,6 +466,9 @@ const notifications = ref<any[]>([]);
 const requestHistory = ref<any[]>([]);
 const error = ref<string | null>(null);
 
+// 工具执行结果
+const toolExecutionResult = ref<any>(null);
+
 // Tab状态
 const activeTab = ref('tools');
 
@@ -545,10 +559,14 @@ function setupMessageHandlers() {
         
       case 'tool-result':
         toolResult.value = message.result;
+        // 显示工具执行结果
+        showToolResult(message.result);
         break;
         
       case 'tool-error':
         error.value = `工具 ${message.toolName} 调用失败: ${message.error}`;
+        // 显示工具执行错误
+        showToolResult({ error: message.error });
         break;
         
       case 'resources-list':
@@ -816,6 +834,34 @@ function handleDismissNotification(id: number) {
   const index = notifications.value.findIndex(n => n.id === id);
   if (index > -1) {
     notifications.value.splice(index, 1);
+  }
+}
+
+// 显示工具执行结果
+function showToolResult(result: any) {
+  toolExecutionResult.value = result;
+}
+
+// 清除工具执行结果
+function clearToolResult() {
+  toolExecutionResult.value = null;
+}
+
+// 格式化工具执行结果
+function formatToolResult(result: any): string {
+  if (!result) return '';
+  
+  try {
+    // 如果是错误信息，直接返回
+    if (result.error) {
+      return `错误: ${result.error}`;
+    }
+    
+    // 尝试格式化为 JSON
+    return JSON.stringify(result, null, 2);
+  } catch (e) {
+    // 如果格式化失败，返回原始值的字符串表示
+    return String(result);
   }
 }
 </script>
