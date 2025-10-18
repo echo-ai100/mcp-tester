@@ -435,7 +435,6 @@ export class MCPTesterProvider implements vscode.WebviewViewProvider {
             const result = await this._serverManager.callTool(name, parameters, progressToken);
             this._sendToWebview({
                 type: 'tool-result',
-                toolName: name,
                 result
             });
         } catch (error) {

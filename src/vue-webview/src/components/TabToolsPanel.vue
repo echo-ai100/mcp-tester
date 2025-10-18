@@ -172,6 +172,7 @@ onMounted(() => {
 function setupMessageHandlers() {
   const handleMessage = (event: MessageEvent) => {
     const message = event.data;
+    console.log('TabToolsPanel: Received message', message);
     
     try {
       switch (message.type) {
@@ -192,11 +193,13 @@ function setupMessageHandlers() {
           break;
           
         case 'tool-result':
+          console.log('TabToolsPanel: Received tool-result', message);
           lastToolResult.value = message.result;
           showResultModal.value = true;
           break;
           
         case 'tool-error':
+          console.log('TabToolsPanel: Received tool-error', message);
           error.value = `工具调用失败: ${message.error}`;
           break;
           
@@ -284,7 +287,12 @@ function handleListTools() {
 }
 
 function handleCallTool(toolName: string, parameters: any) {
-  if (!isConnected.value) return;
+  console.log('TabToolsPanel: Handling call-tool', toolName, parameters);
+  if (!isConnected.value) {
+    console.log('TabToolsPanel: Not connected, ignoring call-tool');
+    return;
+  }
+  console.log('TabToolsPanel: Sending call-tool message to backend');
   postMessage({ 
     type: 'call-tool', 
     name: toolName, 

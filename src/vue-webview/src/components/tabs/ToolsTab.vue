@@ -51,7 +51,10 @@
             </div>
             
             <button
-              @click="callTool(tool)"
+              @click="() => {
+                console.log('ToolsTab: Calling tool', tool.name);
+                callTool(tool);
+              }"
               :disabled="!isConnected"
               class="ml-3 btn-primary text-sm disabled:opacity-50 flex-shrink-0"
             >
@@ -126,6 +129,7 @@ const hasProperties = (schema: any): boolean => {
 };
 
 const callTool = (tool: any) => {
+  console.log('ToolsTab: callTool called with tool:', tool);
   selectedTool.value = tool;
   
   // 根据工具的输入模式生成默认参数
@@ -144,6 +148,8 @@ const callTool = (tool: any) => {
         defaultArgs[name] = [];
       } else if (prop.type === 'object') {
         defaultArgs[name] = {};
+      } else {
+        defaultArgs[name] = null;
       }
     });
     toolArguments.value = JSON.stringify(defaultArgs, null, 2);
@@ -151,11 +157,16 @@ const callTool = (tool: any) => {
     toolArguments.value = '{}';
   }
   
+  console.log('ToolsTab: Setting showCallModal to true');
   showCallModal.value = true;
 };
 
 const executeTool = async () => {
-  if (!selectedTool.value) return;
+  console.log('ToolsTab: executeTool called');
+  if (!selectedTool.value) {
+    console.log('ToolsTab: No selected tool');
+    return;
+  }
   
   executing.value = true;
   try {
@@ -164,9 +175,11 @@ const executeTool = async () => {
       toolArguments.value = '{}';
     }
     const args = JSON.parse(toolArguments.value);
+    console.log('ToolsTab: Emitting call-tool event', selectedTool.value.name, args);
     emit('call-tool', selectedTool.value.name, args);
     showCallModal.value = false;
   } catch (error) {
+    console.error('ToolsTab: Error parsing tool arguments', error);
     alert('参数格式错误，请检查JSON格式');
   } finally {
     executing.value = false;

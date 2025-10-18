@@ -238,9 +238,23 @@
                       <p v-if="tool.description" class="text-vscode-foreground opacity-75 text-sm mb-3">
                         {{ tool.description }}
                       </p>
+                      <!-- 参数信息 -->
+                      <div v-if="tool.inputSchema && tool.inputSchema.properties && Object.keys(tool.inputSchema.properties).length > 0" class="mb-3">
+                        <div class="text-xs text-vscode-foreground opacity-60 mb-2">参数:</div>
+                        <div class="bg-vscode-editor-background rounded p-2 text-xs text-vscode-editor-foreground font-mono">
+                          <div v-for="(prop, name) in tool.inputSchema.properties" :key="name" class="mb-1">
+                            <span class="text-blue-300">{{ name }}</span>
+                            <span class="text-gray-400">: {{ prop.type || 'any' }}</span>
+                            <span v-if="prop.description" class="text-gray-500 ml-2">// {{ prop.description }}</span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                     <button
-                      @click="handleCallTool(tool.name, {})"
+                      @click="() => {
+                        console.log('MainApp: Calling tool', tool.name);
+                        callTool(tool);
+                      }"
                       :disabled="connectionStatus !== 'connected'"
                       class="ml-3 btn-primary text-sm disabled:opacity-50 flex-shrink-0"
                     >
@@ -361,6 +375,38 @@
       </div>
     </div>
     
+    <!-- 工具调用模态框 -->
+    <div v-if="showCallModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-vscode-panel-bg rounded-md p-6 w-11/12 max-w-2xl max-h-5/6 overflow-y-auto border border-vscode-panel-border">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg font-semibold text-vscode-foreground">调用工具: {{ selectedTool?.name }}</h3>
+          <button @click="showCallModal = false" class="text-vscode-foreground hover:text-red-400">
+            ✕
+          </button>
+        </div>
+        
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-vscode-foreground mb-2">参数 (JSON):</label>
+          <textarea
+            v-model="toolArguments"
+            class="w-full h-32 bg-vscode-editor-background text-vscode-editor-foreground border border-vscode-panel-border rounded p-2 font-mono text-sm resize-none"
+            placeholder='{"param": "value"}'
+            @keydown.ctrl.enter="executeTool"
+          ></textarea>
+          <div class="text-xs text-vscode-foreground opacity-60 mt-1">
+            提示: 使用 Ctrl+Enter 快速执行
+          </div>
+        </div>
+        
+        <div class="flex justify-end space-x-3">
+          <button @click="showCallModal = false" class="btn-secondary">取消</button>
+          <button @click="executeTool" :disabled="executing" class="btn-primary">
+            {{ executing ? '执行中...' : '执行工具' }}
+          </button>
+        </div>
+      </div>
+    </div>
+    
     <!-- 通知组件（简化） -->
     <div 
       v-if="notifications.length > 0"
@@ -425,6 +471,12 @@ const config = reactive({
   env: {} as Record<string, string>,
   customHeaders: {} as Record<string, string>
 });
+
+// 工具调用模态框状态
+const showCallModal = ref(false);
+const selectedTool = ref<any>(null);
+const toolArguments = ref('{}');
+const executing = ref(false);
 
 // 计算属性
 const isMainView = computed(() => {
@@ -662,7 +714,67 @@ function handleListTools() {
   postMessage({ type: 'list-tools' });
 }
 
+// 工具调用方法
+function callTool(tool: any) {
+  console.log('MainApp: callTool called with tool:', tool);
+  selectedTool.value = tool;
+  
+  // 根据工具的输入模式生成默认参数
+  if (tool.inputSchema && tool.inputSchema.properties) {
+    const defaultArgs: Record<string, any> = {};
+    Object.entries(tool.inputSchema.properties).forEach(([name, prop]: [string, any]) => {
+      if (prop.default !== undefined) {
+        defaultArgs[name] = prop.default;
+      } else if (prop.type === 'string') {
+        defaultArgs[name] = '';
+      } else if (prop.type === 'number') {
+        defaultArgs[name] = 0;
+      } else if (prop.type === 'boolean') {
+        defaultArgs[name] = false;
+      } else if (prop.type === 'array') {
+        defaultArgs[name] = [];
+      } else if (prop.type === 'object') {
+        defaultArgs[name] = {};
+      } else {
+        defaultArgs[name] = null;
+      }
+    });
+    toolArguments.value = JSON.stringify(defaultArgs, null, 2);
+  } else {
+    toolArguments.value = '{}';
+  }
+  
+  console.log('MainApp: Setting showCallModal to true');
+  showCallModal.value = true;
+}
+
+async function executeTool() {
+  console.log('MainApp: executeTool called');
+  if (!selectedTool.value) {
+    console.log('MainApp: No selected tool');
+    return;
+  }
+  
+  executing.value = true;
+  try {
+    // 确保 toolArguments.value 已定义
+    if (!toolArguments.value) {
+      toolArguments.value = '{}';
+    }
+    const args = JSON.parse(toolArguments.value);
+    console.log('MainApp: Calling handleCallTool', selectedTool.value.name, args);
+    handleCallTool(selectedTool.value.name, args);
+    showCallModal.value = false;
+  } catch (error) {
+    console.error('MainApp: Error parsing tool arguments', error);
+    alert('参数格式错误，请检查JSON格式');
+  } finally {
+    executing.value = false;
+  }
+}
+
 function handleCallTool(toolName: string, parameters: any) {
+  console.log('MainApp: Handling call-tool', toolName, parameters);
   // 确保参数是可序列化的
   const safeParameters = parameters ? JSON.parse(JSON.stringify(parameters)) : {};
   
