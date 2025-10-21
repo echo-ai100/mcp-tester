@@ -14,6 +14,14 @@ MCP Tester 是一个功能强大的 VSCode 扩展，用于测试和调试 Model 
 - ⚙️ **配置管理**: 保存和加载服务器配置
 - 🎨 **现代界面**: 基于 Vue 3 的响应式 WebView 界面
 
+## 打包步骤
+1. 打包webview
+cd ./src/vue-webview && npm run build
+2. 运行主项目构建
+cd ../../ && npm run build
+3. 打包vsix
+npx vsce package
+
 ## 安装方法
 
 ### 方法 1: 直接安装 VSIX 文件

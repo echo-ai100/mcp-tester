@@ -74,7 +74,7 @@
             </div>
             
             <button
-              @click="getPrompt(prompt)"
+              @click="handleGetPromptClick(prompt)"
               :disabled="!isConnected"
               class="ml-3 btn-primary text-sm disabled:opacity-50 flex-shrink-0"
             >
@@ -155,7 +155,7 @@ const executing = ref(false);
 const showingPrompt = ref<string | null>(null);
 
 // 方法
-const getPrompt = (prompt: any) => {
+const handleGetPromptClick = (prompt: any) => {
   selectedPrompt.value = prompt;
   
   // 重置参数

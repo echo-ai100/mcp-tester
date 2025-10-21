@@ -85,7 +85,7 @@
                 {
                     "id": "mcp-tester",
                     "title": "MCP Tester",
-                    "icon": "${play}"
+                    "icon": "resources/debug-alt.svg"
                 }
             ]
         },
