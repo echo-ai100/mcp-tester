@@ -42,9 +42,27 @@
                   <p v-if="template.description" class="text-vscode-foreground opacity-75 text-sm mb-2">
                     {{ template.description }}
                   </p>
-                  <div class="text-xs text-vscode-foreground opacity-60">
+                  <div class="text-xs text-vscode-foreground opacity-60 mb-2">
                     模板: {{ template.uriTemplate }}
                   </div>
+                  
+                  <!-- 显示资源模板内容 -->
+                  <div v-if="resourceContent[getTemplateKey(template)]" class="mt-3">
+                    <div class="text-xs text-vscode-foreground opacity-60 mb-2">内容:</div>
+                    <div class="bg-vscode-editor-background rounded p-3 text-xs text-vscode-editor-foreground font-mono max-h-40 overflow-y-auto">
+                      <pre>{{ formatResourceContent(resourceContent[getTemplateKey(template)]) }}</pre>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="ml-3 flex flex-col space-y-2 flex-shrink-0">
+                  <button
+                    @click="handleReadTemplateClick(template)"
+                    :disabled="!isConnected"
+                    class="btn-primary text-sm disabled:opacity-50"
+                  >
+                    读取
+                  </button>
                 </div>
               </div>
             </div>
@@ -114,11 +132,48 @@
         </div>
       </div>
     </div>
+    
+    <!-- 参数输入模态框 -->
+    <div v-if="showArgsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-vscode-panel-bg rounded-md p-6 w-11/12 max-w-2xl max-h-5/6 overflow-y-auto border border-vscode-panel-border">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg font-semibold text-vscode-foreground">读取资源: {{ selectedTemplate?.name || selectedTemplate?.uriTemplate }}</h3>
+          <button @click="cancelArgsInput" class="text-vscode-foreground hover:text-red-400">
+            ✕
+          </button>
+        </div>
+        
+        <div class="mb-4">
+          <div class="text-sm text-vscode-foreground opacity-75 mb-3">
+            URI模板: {{ selectedTemplate?.uriTemplate }}
+          </div>
+          
+          <div class="space-y-3">
+            <div v-for="key in Object.keys(templateArguments)" :key="key">
+              <label class="block text-sm font-medium text-vscode-foreground mb-1">
+                {{ key }}
+              </label>
+              <input
+                v-model="templateArguments[key]"
+                type="text"
+                class="w-full bg-vscode-editor-background text-vscode-editor-foreground border border-vscode-panel-border rounded p-2 text-sm"
+                :placeholder="`输入 ${key}`"
+              />
+            </div>
+          </div>
+        </div>
+        
+        <div class="flex justify-end space-x-3">
+          <button @click="cancelArgsInput" class="btn-secondary">取消</button>
+          <button @click="executeReadTemplate()" class="btn-primary">读取资源</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, reactive } from 'vue';
 
 // Props
 interface Props {
@@ -141,6 +196,9 @@ const emit = defineEmits<{
 
 // 状态
 const subscribedResources = ref<Set<string>>(new Set());
+const showArgsModal = ref(false);
+const selectedTemplate = ref<any>(null);
+const templateArguments = reactive<Record<string, string>>({});
 
 // 方法
 const readResource = (uri: string) => {
@@ -180,6 +238,84 @@ const formatResourceContent = (content: any): string => {
   }
   
   return JSON.stringify(content, null, 2);
+};
+
+// 解析URI模板中的参数
+const parseTemplateParams = (uriTemplate: string): string[] => {
+  const paramRegex = /\{([^}]+)\}/g;
+  const params: string[] = [];
+  let match;
+  
+  while ((match = paramRegex.exec(uriTemplate)) !== null) {
+    params.push(match[1]);
+  }
+  
+  return params;
+};
+
+// 生成资源模板的key
+const getTemplateKey = (template: any): string => {
+  return `template:${template.uriTemplate}`;
+};
+
+// 处理资源模板读取点击
+const handleReadTemplateClick = (template: any) => {
+  console.log('[ResourcesTab] handleReadTemplateClick called');
+  console.log('[ResourcesTab] template:', JSON.stringify(template, null, 2));
+  
+  selectedTemplate.value = template;
+  
+  // 重置参数
+  Object.keys(templateArguments).forEach(key => {
+    delete templateArguments[key];
+  });
+  
+  // 解析URI模板中的参数
+  const params = parseTemplateParams(template.uriTemplate);
+  console.log('[ResourcesTab] parsed params:', params);
+  
+  // 如果有参数,显示参数输入框
+  if (params.length > 0) {
+    console.log('[ResourcesTab] 显示参数输入框');
+    params.forEach(param => {
+      templateArguments[param] = '';
+    });
+    showArgsModal.value = true;
+    console.log('[ResourcesTab] showArgsModal set to true');
+  } else {
+    console.log('[ResourcesTab] 无参数,直接读取资源');
+    executeReadTemplate(template.uriTemplate);
+  }
+};
+
+// 执行资源模板读取
+const executeReadTemplate = (uriTemplate?: string) => {
+  const template = uriTemplate || selectedTemplate.value?.uriTemplate;
+  if (!template) return;
+  
+  console.log('[ResourcesTab] executeReadTemplate');
+  console.log('[ResourcesTab] uriTemplate:', template);
+  console.log('[ResourcesTab] templateArguments:', templateArguments);
+  
+  // 替换URI模板中的参数
+  let finalUri = template;
+  Object.entries(templateArguments).forEach(([key, value]) => {
+    if (value !== undefined && value !== '') {
+      finalUri = finalUri.replace(`{${key}}`, value);
+    }
+  });
+  
+  console.log('[ResourcesTab] finalUri:', finalUri);
+  
+  // 发送读取资源请求
+  emit('read-resource', finalUri);
+  showArgsModal.value = false;
+};
+
+// 取消参数输入
+const cancelArgsInput = () => {
+  showArgsModal.value = false;
+  selectedTemplate.value = null;
 };
 </script>
 

@@ -973,6 +973,7 @@ class MCPTesterProvider {
                 if (this._serverManager.isConnected) {
                     this._handleListTools();
                     this._handleListResources();
+                    this._handleListResourceTemplates();
                     this._handleListPrompts();
                 }
             }, 100);
@@ -1241,10 +1242,16 @@ class MCPServerManager extends events_1.EventEmitter {
         if (!this._client || !this._isConnected) {
             throw new Error('客户端未连接');
         }
-        const request = {
-            method: "tools/list",
-            params: cursor ? { cursor } : {}
-        };
+        // 检查是否有cursor参数,如果没有则不包含params字段
+        // 这符合MCP协议规范:无参数时应省略params字段
+        const request = cursor
+            ? {
+                method: "tools/list",
+                params: { cursor }
+            }
+            : {
+                method: "tools/list"
+            };
         const result = await this._makeRequest(request);
         // 确保返回的数据结构正确
         return {
@@ -1269,10 +1276,16 @@ class MCPServerManager extends events_1.EventEmitter {
         if (!this._client || !this._isConnected) {
             throw new Error('客户端未连接');
         }
-        const request = {
-            method: "resources/list",
-            params: cursor ? { cursor } : {}
-        };
+        // 检查是否有cursor参数,如果没有则不包含params字段
+        // 这符合MCP协议规范:无参数时应省略params字段
+        const request = cursor
+            ? {
+                method: "resources/list",
+                params: { cursor }
+            }
+            : {
+                method: "resources/list"
+            };
         const result = await this._makeRequest(request);
         return {
             resources: result?.resources || [],
@@ -1284,10 +1297,16 @@ class MCPServerManager extends events_1.EventEmitter {
         if (!this._client || !this._isConnected) {
             throw new Error('客户端未连接');
         }
-        const request = {
-            method: "resources/templates/list",
-            params: cursor ? { cursor } : {}
-        };
+        // 检查是否有cursor参数,如果没有则不包含params字段
+        // 这符合MCP协议规范:无参数时应省略params字段
+        const request = cursor
+            ? {
+                method: "resources/templates/list",
+                params: { cursor }
+            }
+            : {
+                method: "resources/templates/list"
+            };
         const result = await this._makeRequest(request);
         return {
             resourceTemplates: result?.resourceTemplates || [],
@@ -1323,10 +1342,16 @@ class MCPServerManager extends events_1.EventEmitter {
         if (!this._client || !this._isConnected) {
             throw new Error('客户端未连接');
         }
-        const request = {
-            method: "prompts/list",
-            params: cursor ? { cursor } : {}
-        };
+        // 检查是否有cursor参数,如果没有则不包含params字段
+        // 这符合MCP协议规范:无参数时应省略params字段
+        const request = cursor
+            ? {
+                method: "prompts/list",
+                params: { cursor }
+            }
+            : {
+                method: "prompts/list"
+            };
         const result = await this._makeRequest(request);
         return {
             prompts: result?.prompts || [],
@@ -1384,8 +1409,7 @@ class MCPServerManager extends events_1.EventEmitter {
     }
     async ping() {
         const request = {
-            method: "ping",
-            params: {}
+            method: "ping"
         };
         await this._makeRequest(request);
     }

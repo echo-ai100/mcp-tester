@@ -308,10 +308,16 @@ export class MCPServerManager extends EventEmitter {
             throw new Error('客户端未连接');
         }
         
-        const request: ClientRequest = {
-            method: "tools/list" as const,
-            params: cursor ? { cursor } : {}
-        };
+        // 检查是否有cursor参数,如果没有则不包含params字段
+        // 这符合MCP协议规范:无参数时应省略params字段
+        const request: ClientRequest = cursor
+            ? {
+                method: "tools/list" as const,
+                params: { cursor }
+              }
+            : {
+                method: "tools/list" as const
+              };
         
         const result = await this._makeRequest<ListToolsResult>(request);
         
@@ -342,10 +348,16 @@ export class MCPServerManager extends EventEmitter {
             throw new Error('客户端未连接');
         }
         
-        const request: ClientRequest = {
-            method: "resources/list" as const,
-            params: cursor ? { cursor } : {}
-        };
+        // 检查是否有cursor参数,如果没有则不包含params字段
+        // 这符合MCP协议规范:无参数时应省略params字段
+        const request: ClientRequest = cursor 
+            ? {
+                method: "resources/list" as const,
+                params: { cursor }
+              }
+            : {
+                method: "resources/list" as const
+              };
         
         const result = await this._makeRequest<ListResourcesResult>(request);
         
@@ -361,10 +373,16 @@ export class MCPServerManager extends EventEmitter {
             throw new Error('客户端未连接');
         }
         
-        const request: ClientRequest = {
-            method: "resources/templates/list" as const,
-            params: cursor ? { cursor } : {}
-        };
+        // 检查是否有cursor参数,如果没有则不包含params字段
+        // 这符合MCP协议规范:无参数时应省略params字段
+        const request: ClientRequest = cursor
+            ? {
+                method: "resources/templates/list" as const,
+                params: { cursor }
+              }
+            : {
+                method: "resources/templates/list" as const
+              };
         
         const result = await this._makeRequest<ListResourceTemplatesResult>(request);
         
@@ -410,10 +428,16 @@ export class MCPServerManager extends EventEmitter {
             throw new Error('客户端未连接');
         }
         
-        const request: ClientRequest = {
-            method: "prompts/list" as const,
-            params: cursor ? { cursor } : {}
-        };
+        // 检查是否有cursor参数,如果没有则不包含params字段
+        // 这符合MCP协议规范:无参数时应省略params字段
+        const request: ClientRequest = cursor
+            ? {
+                method: "prompts/list" as const,
+                params: { cursor }
+              }
+            : {
+                method: "prompts/list" as const
+              };
         
         const result = await this._makeRequest<ListPromptsResult>(request);
         
@@ -483,8 +507,7 @@ export class MCPServerManager extends EventEmitter {
 
     public async ping(): Promise<void> {
         const request: ClientRequest = {
-            method: "ping" as const,
-            params: {}
+            method: "ping" as const
         };
         
         await this._makeRequest(request);

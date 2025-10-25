@@ -720,6 +720,7 @@ export class MCPTesterProvider implements vscode.WebviewViewProvider {
                 if (this._serverManager.isConnected) {
                     this._handleListTools();
                     this._handleListResources();
+                    this._handleListResourceTemplates();
                     this._handleListPrompts();
                 }
             }, 100);
