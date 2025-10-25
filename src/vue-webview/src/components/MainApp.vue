@@ -315,46 +315,14 @@
 
           <!-- Prompts Tab -->
           <div v-show="activeTab === 'prompts'" class="h-full flex flex-col">
-            <div class="flex-shrink-0 p-4 border-b border-vscode-panel-border">
-              <div class="flex justify-between items-center">
-                <h3 class="text-sm font-medium text-vscode-foreground">提示词列表</h3>
-                <button
-                  @click="handleListPrompts"
-                  :disabled="connectionStatus !== 'connected'"
-                  class="btn-secondary text-xs disabled:opacity-50"
-                >
-                  刷新
-                </button>
-              </div>
-            </div>
-            <div class="flex-1 overflow-y-auto p-4">
-              <div v-if="prompts.length === 0" class="text-center py-8 text-vscode-foreground opacity-75">
-                {{ connectionStatus === 'connected' ? '没有可用的提示词' : '请先连接到服务器' }}
-              </div>
-              <div v-else class="space-y-3">
-                <div
-                  v-for="prompt in prompts"
-                  :key="prompt.name"
-                  class="bg-vscode-panel-bg border border-vscode-panel-border rounded-md p-4 hover:bg-opacity-80 transition-colors"
-                >
-                  <div class="flex items-start justify-between">
-                    <div class="flex-1 min-w-0">
-                      <h4 class="text-vscode-foreground font-medium mb-1">{{ prompt.name }}</h4>
-                      <p v-if="prompt.description" class="text-vscode-foreground opacity-75 text-sm mb-3">
-                        {{ prompt.description }}
-                      </p>
-                    </div>
-                    <button
-                      @click="handleGetPrompt(prompt.name, {})"
-                      :disabled="connectionStatus !== 'connected'"
-                      class="ml-3 btn-primary text-sm disabled:opacity-50 flex-shrink-0"
-                    >
-                      获取
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <PromptsTab
+              :prompts="prompts"
+              :prompt-content="promptContent"
+              :is-connected="connectionStatus === 'connected'"
+              :loading="false"
+              @refresh="handleListPrompts"
+              @get-prompt="handleGetPrompt"
+            />
           </div>
         </div>
         
@@ -450,6 +418,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, computed, watch } from 'vue';
+import PromptsTab from './tabs/PromptsTab.vue';
 
 // 响应式数据
 const connectionStatus = ref<'disconnected' | 'connecting' | 'connected' | 'error'>('disconnected');

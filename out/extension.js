@@ -1335,9 +1335,14 @@ class MCPServerManager extends events_1.EventEmitter {
     }
     //获取提示词
     async getPrompt(name, arguments_ = {}) {
+        // 检查参数对象是否为空，如果为空则不包含arguments字段
+        // 这符合MCP协议规范：无参数时应省略arguments字段
+        const hasValidArguments = arguments_ && Object.keys(arguments_).length > 0;
         const request = {
             method: "prompts/get",
-            params: { name, arguments: arguments_ }
+            params: hasValidArguments
+                ? { name, arguments: arguments_ }
+                : { name }
         };
         return this._makeRequest(request);
     }

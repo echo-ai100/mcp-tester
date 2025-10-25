@@ -156,6 +156,11 @@ const showingPrompt = ref<string | null>(null);
 
 // 方法
 const handleGetPromptClick = (prompt: any) => {
+  console.log('[PromptsTab] handleGetPromptClick called');
+  console.log('[PromptsTab] prompt:', JSON.stringify(prompt, null, 2));
+  console.log('[PromptsTab] prompt.arguments:', prompt.arguments);
+  console.log('[PromptsTab] arguments length:', prompt.arguments?.length);
+  
   selectedPrompt.value = prompt;
   
   // 重置参数
@@ -165,37 +170,67 @@ const handleGetPromptClick = (prompt: any) => {
   
   // 如果有参数，显示参数输入框
   if (prompt.arguments && prompt.arguments.length > 0) {
+    console.log('[PromptsTab] 显示参数输入框');
     // 初始化参数
     prompt.arguments.forEach((arg: any) => {
-      promptArguments[arg.name] = '';
+      // 如果有默认值则使用默认值，否则初始化为空字符串
+      promptArguments[arg.name] = arg.default !== undefined ? String(arg.default) : '';
     });
     showArgsModal.value = true;
+    console.log('[PromptsTab] showArgsModal set to true');
   } else {
+    console.log('[PromptsTab] 无参数，直接获取提示词');
     // 直接获取提示词
     executeGetPrompt();
   }
 };
 
 const executeGetPrompt = async () => {
-  if (!selectedPrompt.value) return;
+  console.log('[PromptsTab] executeGetPrompt called');
+  if (!selectedPrompt.value) {
+    console.log('[PromptsTab] selectedPrompt is null, returning');
+    return;
+  }
+  
+  console.log('[PromptsTab] selectedPrompt:', selectedPrompt.value);
+  console.log('[PromptsTab] promptArguments:', promptArguments);
   
   executing.value = true;
   try {
     // 验证必需参数
     if (selectedPrompt.value.arguments) {
+      console.log('[PromptsTab] 验证必需参数...');
       for (const arg of selectedPrompt.value.arguments) {
-        if (arg.required && !promptArguments[arg.name]) {
+        const value = promptArguments[arg.name];
+        console.log(`[PromptsTab] 检查参数 ${arg.name}: required=${arg.required}, value=${value}`);
+        if (arg.required && (value === undefined || value === '')) {
+          console.log(`[PromptsTab] 参数 "${arg.name}" 是必需的，但未填写`);
           alert(`参数 "${arg.name}" 是必需的`);
+          executing.value = false;
           return;
         }
       }
     }
     
-    emit('get-prompt', selectedPrompt.value.name, { ...promptArguments });
+    // 构建参数对象，只包含有值的参数（不包括空字符串）
+    const args: Record<string, string> = {};
+    if (selectedPrompt.value.arguments) {
+      for (const arg of selectedPrompt.value.arguments) {
+        const value = promptArguments[arg.name];
+        // 只添加非空字符串的参数值
+        if (value !== undefined && value !== '') {
+          args[arg.name] = value;
+        }
+      }
+    }
+    
+    console.log('[PromptsTab] 发送get-prompt事件, name:', selectedPrompt.value.name, 'args:', args);
+    emit('get-prompt', selectedPrompt.value.name, args);
     showingPrompt.value = selectedPrompt.value.name;
     showArgsModal.value = false;
   } catch (error) {
-    console.error('获取提示词失败:', error);
+    console.error('[PromptsTab] 获取提示词失败:', error);
+    alert('获取提示词失败: ' + (error instanceof Error ? error.message : String(error)));
   } finally {
     executing.value = false;
   }

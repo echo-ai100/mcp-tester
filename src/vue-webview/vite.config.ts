@@ -24,6 +24,11 @@ export default defineConfig({
       }
     },
     minify:'terser',
+    terserOptions: {
+      compress: {
+        drop_console: false, // 保留console.log调试信息
+      }
+    },
     target:'es2022',
   },
   server:{

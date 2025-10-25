@@ -1,20 +1,13 @@
 # Ignore all development dependencies
 node_modules/
-src/vue-webview/node_modules/
 inspector/
 
 # Ignore TypeScript source files
 src/**/*.ts
 !src/**/*.d.ts
 
-# Ignore Vue source files but keep build artifacts
-src/vue-webview/src/
-src/vue-webview/index.html
-src/vue-webview/vite.config.ts
-src/vue-webview/tailwind.config.js
-src/vue-webview/postcss.config.js
-src/vue-webview/tsconfig*.json
-src/vue-webview/package*.json
+# Ignore entire vue-webview source directory (keep only webview-dist)
+src/vue-webview/
 
 # Ignore development configuration
 .vscode/
