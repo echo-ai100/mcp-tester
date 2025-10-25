@@ -268,49 +268,15 @@
 
           <!-- Resources Tab -->
           <div v-show="activeTab === 'resources'" class="h-full flex flex-col">
-            <div class="flex-shrink-0 p-4 border-b border-vscode-panel-border">
-              <div class="flex justify-between items-center">
-                <h3 class="text-sm font-medium text-vscode-foreground">资源列表</h3>
-                <button
-                  @click="handleListResources"
-                  :disabled="connectionStatus !== 'connected'"
-                  class="btn-secondary text-xs disabled:opacity-50"
-                >
-                  刷新
-                </button>
-              </div>
-            </div>
-            <div class="flex-1 overflow-y-auto p-4">
-              <div v-if="resources.length === 0" class="text-center py-8 text-vscode-foreground opacity-75">
-                {{ connectionStatus === 'connected' ? '没有可用的资源' : '请先连接到服务器' }}
-              </div>
-              <div v-else class="space-y-3">
-                <div
-                  v-for="resource in resources"
-                  :key="resource.uri"
-                  class="bg-vscode-panel-bg border border-vscode-panel-border rounded-md p-4 hover:bg-opacity-80 transition-colors"
-                >
-                  <div class="flex items-start justify-between">
-                    <div class="flex-1 min-w-0">
-                      <h4 class="text-vscode-foreground font-medium mb-1">{{ resource.name || resource.uri }}</h4>
-                      <p v-if="resource.description" class="text-vscode-foreground opacity-75 text-sm mb-2">
-                        {{ resource.description }}
-                      </p>
-                      <div class="text-xs text-vscode-foreground opacity-60">
-                        URI: {{ resource.uri }}
-                      </div>
-                    </div>
-                    <button
-                      @click="handleReadResource(resource.uri)"
-                      :disabled="connectionStatus !== 'connected'"
-                      class="ml-3 btn-primary text-sm disabled:opacity-50 flex-shrink-0"
-                    >
-                      读取
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <ResourcesTab
+              :resources="resources"
+              :resource-templates="resourceTemplates"
+              :resource-content="resourceContent"
+              :is-connected="connectionStatus === 'connected'"
+              :loading="false"
+              @refresh="handleListResources"
+              @read-resource="handleReadResource"
+            />
           </div>
 
           <!-- Prompts Tab -->
@@ -418,6 +384,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, computed, watch } from 'vue';
+import ResourcesTab from './tabs/ResourcesTab.vue';
 import PromptsTab from './tabs/PromptsTab.vue';
 
 // 响应式数据
