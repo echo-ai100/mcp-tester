@@ -39,7 +39,7 @@ A full-featured VSCode extension for testing and debugging Model Context Protoco
 
 1. **Clone the repository**:
 ```bash
-git clone <repository-url>
+git clone https://github.com/echo-ai100/mcp-tester.git
 cd mcp-tester
 ```
 
@@ -55,12 +55,14 @@ npm run install-webview
 
 4. **Build the project**:
 ```bash
-npm run build
+cd ./src/vue-webview && npm run build
+cd ../../ && npm run build
 ```
 
-5. **Debug in VSCode**:
-   - Press `F5` to start debug mode
-   - Or use VSCode's "Run Extension" configuration
+5. **Build the .vsix file**:
+```bash
+npx vsce package
+```
 
 ### Install from VSIX
 

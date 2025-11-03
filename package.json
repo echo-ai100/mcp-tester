@@ -4,6 +4,11 @@
     "description": "A simple mcp tester for vscode",
     "version": "0.0.2",
     "publisher": "echoai",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/echo-ai100/mcp-tester.git"
+    },
+    "icon": "resources/mcp-tester.png",
     "engines": {
         "vscode": "^1.74.0"
     },
