@@ -1,85 +1,94 @@
 # MCP Tester
 
-一个功能完整的 VSCode 扩展，用于测试和调试 Model Context Protocol (MCP) 服务器。该扩展提供了与官方 MCP Inspector 相同的功能特性，支持多种传输协议，提供直观的界面进行 MCP 服务器管理和交互。
+A full-featured VSCode extension for testing and debugging Model Context Protocol (MCP) servers. This extension provides the same functionality as the official MCP Inspector, supporting multiple transport protocols with an intuitive interface for MCP server management and interaction.
 
-## 🚀 核心功能
+## 🚀 Core Features
 
-### 📡 多协议支持
-- **STDIO 传输**: 支持本地命令行 MCP 服务器
-- **SSE (Server-Sent Events)**: 支持基于 HTTP 流式事件的连接
-- **Streamable HTTP**: 支持 HTTP 流式传输协议
-- **自定义 Headers**: 支持认证和自定义 HTTP 头
+### 📡 Multi-Protocol Support
+- **STDIO Transport**: Support for local command-line MCP servers
+- **SSE (Server-Sent Events)**: HTTP streaming event-based connections  
+- **Streamable HTTP**: HTTP streaming transport protocol
+- **Custom Headers**: Authentication and custom HTTP headers support
 
-### 🛠️ 完整的 MCP 功能
-- **工具管理**: 列出、查看和调用 MCP 工具
-- **资源管理**: 浏览、读取和订阅 MCP 资源
-- **提示词管理**: 管理和使用 MCP 提示词模板
-- **根目录管理**: 查看和管理服务器根目录
-- **实时通知**: 接收服务器通知和状态更新
+### 🛠️ Complete MCP Functionality
+- **Tools Management**: List, view, and invoke MCP tools
+- **Resources Management**: Browse, read, and subscribe to MCP resources
+- **Prompts Management**: Manage and use MCP prompt templates
+- **Roots Management**: View and manage server root directories
+- **Real-time Notifications**: Receive server notifications and status updates
 
-### 🎯 高级特性
-- **可视化界面**: 基于 Vue.js 的现代化 WebView 界面
-- **配置管理**: 保存和管理多个服务器配置
-- **请求历史**: 完整的请求/响应历史记录
-- **错误处理**: 完善的错误处理和用户反馈
-- **状态监控**: 实时连接状态和服务器能力显示
-- **采样支持**: 支持 MCP 采样请求和响应
-- **完成支持**: 支持参数自动完成
+### 🎯 Advanced Features
+- **Visual Interface**: Modern WebView UI built with Vue.js
+- **Configuration Management**: Save and manage multiple server configurations
+- **Request History**: Complete request/response history tracking
+- **Error Handling**: Comprehensive error handling and user feedback
+- **Status Monitoring**: Real-time connection status and server capabilities display
+- **Sampling Support**: MCP sampling request and response support
+- **Completion Support**: Parameter auto-completion support
 
-### 🔧 开发者工具
-- **命令面板集成**: 所有功能可通过 VSCode 命令面板访问
-- **状态栏显示**: 实时显示连接状态
-- **配置导入/导出**: 支持 MCP 服务器配置的导入导出
-- **日志管理**: 支持设置日志级别和查看日志
-- **Ping 测试**: 测试服务器连接和响应
+### 🔧 Developer Tools
+- **Command Palette Integration**: All features accessible via VSCode command palette
+- **Status Bar Display**: Real-time connection status display
+- **Config Import/Export**: MCP server configuration import/export support
+- **Log Management**: Support for setting log levels and viewing logs
+- **Ping Testing**: Test server connection and response
 
-## 📦 安装
+## 📦 Installation
 
-### 从源码构建
+### Build from Source
 
-1. **克隆仓库**:
+1. **Clone the repository**:
 ```bash
 git clone <repository-url>
 cd mcp-tester
 ```
 
-2. **安装主项目依赖**:
+2. **Install main project dependencies**:
 ```bash
 npm install
 ```
 
-3. **安装 Vue webview 依赖**:
+3. **Install Vue webview dependencies**:
 ```bash
 npm run install-webview
 ```
 
-4. **构建项目**:
+4. **Build the project**:
 ```bash
 npm run build
 ```
 
-5. **在 VSCode 中调试**:
-   - 按 `F5` 启动调试模式
-   - 或者使用 VSCode 的 "Run Extension" 配置
+5. **Debug in VSCode**:
+   - Press `F5` to start debug mode
+   - Or use VSCode's "Run Extension" configuration
 
-## 🎮 使用方法
+### Install from VSIX
 
-### 1. 启动 MCP Tester
+1. Download the latest `.vsix` file from releases
+2. Open VSCode
+3. Press `Ctrl+Shift+P` (Windows/Linux) or `Cmd+Shift+P` (macOS)
+4. Type "Extensions: Install from VSIX..."
+5. Select the downloaded `.vsix` file
+6. Reload VSCode when prompted
 
-#### 通过命令面板:
-- 打开命令面板 (`Ctrl+Shift+P` / `Cmd+Shift+P`)
-- 输入 "MCP: Open MCP Tester"
+## 🎮 Usage
 
-#### 通过活动栏:
-- 点击左侧活动栏中的 MCP Tester 图标
+### 1. Launch MCP Tester
 
-#### 通过状态栏:
-- 点击底部状态栏的 MCP 连接状态
+#### Via Command Palette:
+- Open command palette (`Ctrl+Shift+P` / `Cmd+Shift+P`)
+- Type "MCP: Open MCP Tester"
 
-### 2. 连接到 MCP 服务器
+#### Via Activity Bar:
+- Click the MCP Tester icon in the left activity bar
 
-#### STDIO 传输 (推荐用于本地开发)
-适用于本地命令行 MCP 服务器:
+#### Via Status Bar:
+- Click the MCP connection status in the bottom status bar
+
+### 2. Connect to MCP Server
+
+#### STDIO Transport (Recommended for local development)
+For local command-line MCP servers:
 
 ```json
 {
@@ -93,7 +102,7 @@ npm run build
 }
 ```
 
-**示例配置**:
+**Example Configuration**:
 ```json
 {
   "type": "stdio",
@@ -105,8 +114,8 @@ npm run build
 }
 ```
 
-#### SSE (Server-Sent Events) 传输
-适用于 HTTP 流式传输:
+#### SSE (Server-Sent Events) Transport
+For HTTP streaming transport:
 
 ```json
 {
@@ -119,8 +128,8 @@ npm run build
 }
 ```
 
-#### Streamable HTTP 传输
-适用于 HTTP 流式传输:
+#### Streamable HTTP Transport
+For HTTP streaming transport:
 
 ```json
 {
@@ -132,55 +141,55 @@ npm run build
 }
 ```
 
-### 3. 使用 MCP 功能
+### 3. Use MCP Features
 
-连接成功后，你可以:
+Once connected, you can:
 
-#### 🛠️ 工具 (Tools)
-- **列出工具**: 查看服务器提供的所有工具
-- **查看工具详情**: 查看工具的输入/输出模式
-- **调用工具**: 使用表单或 JSON 格式调用工具
-- **查看结果**: 查看工具执行结果和错误信息
+#### 🛠️ Tools
+- **List Tools**: View all tools provided by the server
+- **View Tool Details**: Check tool input/output schemas
+- **Invoke Tools**: Call tools using form or JSON format
+- **View Results**: See tool execution results and error messages
 
-#### 📄 资源 (Resources)
-- **浏览资源**: 查看可用的资源列表
-- **读取资源**: 获取资源内容
-- **订阅资源**: 订阅资源变更通知
-- **资源模板**: 使用参数化资源模板
+#### 📄 Resources
+- **Browse Resources**: View available resource list
+- **Read Resources**: Get resource content
+- **Subscribe Resources**: Subscribe to resource change notifications
+- **Resource Templates**: Use parameterized resource templates
 
-#### 💬 提示词 (Prompts)
-- **管理提示词**: 查看和使用预定义提示词
-- **参数填充**: 为提示词提供参数
-- **获取结果**: 获取生成的提示词内容
+#### 💬 Prompts
+- **Manage Prompts**: View and use predefined prompts
+- **Parameter Filling**: Provide parameters for prompts
+- **Get Results**: Retrieve generated prompt content
 
-#### 📁 根目录 (Roots)
-- **查看根目录**: 列出服务器根目录
-- **目录管理**: 管理服务器文件系统访问
+#### 📁 Roots
+- **View Roots**: List server root directories
+- **Directory Management**: Manage server filesystem access
 
-#### 🔔 实时功能
-- **服务器通知**: 接收实时服务器通知
-- **连接状态**: 监控连接状态变化
-- **请求历史**: 查看完整的请求/响应历史
+#### 🔔 Real-time Features
+- **Server Notifications**: Receive real-time server notifications
+- **Connection Status**: Monitor connection status changes
+- **Request History**: View complete request/response history
 
-## ⚙️ 配置选项
+## ⚙️ Configuration Options
 
-### VSCode 设置
+### VSCode Settings
 
-在 VSCode 设置中配置 `mcp-tester` 相关选项:
+Configure `mcp-tester` options in VSCode settings:
 
-| 配置项 | 类型 | 默认值 | 描述 |
-|--------|------|--------|------|
-| `mcp-tester.autoStart` | boolean | true | VSCode 启动时自动启动 |
-| `mcp-tester.defaultTransport` | string | "stdio" | 默认传输协议 |
-| `mcp-tester.timeout` | number | 30000 | 请求超时时间(毫秒) |
-| `mcp-tester.maxHistory` | number | 100 | 最大历史记录数 |
-| `mcp-tester.enableLogging` | boolean | false | 是否启用日志 |
-| `mcp-tester.maxRetryAttempts` | number | 3 | 最大重试次数 |
-| `mcp-tester.retryDelay` | number | 1000 | 重试延迟(毫秒) |
+| Configuration | Type | Default | Description |
+|--------------|------|---------|-------------|
+| `mcp-tester.autoStart` | boolean | true | Auto-start on VSCode launch |
+| `mcp-tester.defaultTransport` | string | "stdio" | Default transport protocol |
+| `mcp-tester.timeout` | number | 30000 | Request timeout (milliseconds) |
+| `mcp-tester.maxHistory` | number | 100 | Maximum history entries |
+| `mcp-tester.enableLogging` | boolean | false | Enable logging |
+| `mcp-tester.maxRetryAttempts` | number | 3 | Maximum retry attempts |
+| `mcp-tester.retryDelay` | number | 1000 | Retry delay (milliseconds) |
 
-### 服务器配置
+### Server Configuration
 
-在设置中配置 `mcp-tester.servers` 数组来预定义服务器:
+Configure the `mcp-tester.servers` array in settings to predefine servers:
 
 ```json
 {
@@ -211,177 +220,177 @@ npm run build
 }
 ```
 
-## 🎛️ 命令面板命令
+## 🎛️ Command Palette Commands
 
-| 命令 | 描述 |
-|------|------|
-| `MCP: Open MCP Tester` | 打开 MCP Tester 主界面 |
-| `MCP: Connect to MCP Server` | 连接到 MCP 服务器 |
-| `MCP: Disconnect from MCP Server` | 断开服务器连接 |
-| `MCP: List Tools` | 在编辑器中显示工具列表 |
-| `MCP: List Resources` | 在编辑器中显示资源列表 |
-| `MCP: List Prompts` | 在编辑器中显示提示词列表 |
-| `MCP: Ping Server` | 测试服务器连接 |
-| `MCP: Show Connection Status` | 显示连接状态信息 |
-| `MCP: Clear Request History` | 清除请求历史记录 |
-| `MCP: Export Server Configuration` | 导出服务器配置 |
-| `MCP: Import Server Configuration` | 导入服务器配置 |
+| Command | Description |
+|---------|-------------|
+| `MCP: Open MCP Tester` | Open MCP Tester main interface |
+| `MCP: Connect to MCP Server` | Connect to MCP server |
+| `MCP: Disconnect from MCP Server` | Disconnect from server |
+| `MCP: List Tools` | Display tools list in editor |
+| `MCP: List Resources` | Display resources list in editor |
+| `MCP: List Prompts` | Display prompts list in editor |
+| `MCP: Ping Server` | Test server connection |
+| `MCP: Show Connection Status` | Show connection status information |
+| `MCP: Clear Request History` | Clear request history |
+| `MCP: Export Server Configuration` | Export server configuration |
+| `MCP: Import Server Configuration` | Import server configuration |
 
-## 🏗️ 项目架构
+## 🏗️ Project Architecture
 
 ```
 mcp-tester/
 ├── src/
-│   ├── extension.ts              # VSCode 扩展主入口
-│   ├── mcp-tester-provider.ts    # WebView 提供器，处理 UI 交互
+│   ├── extension.ts              # VSCode extension entry point
+│   ├── mcp-tester-provider.ts    # WebView provider for UI interaction
 │   ├── server/
-│   │   └── mcp-server-manager.ts # MCP 服务器管理器，处理协议通信
-│   └── vue-webview/             # Vue.js 前端界面
+│   │   └── mcp-server-manager.ts # MCP server manager for protocol communication
+│   └── vue-webview/             # Vue.js frontend interface
 │       ├── src/
-│       │   ├── components/      # Vue 组件
-│       │   │   ├── MainApp.vue  # 主应用组件
-│       │   │   ├── Sidebar.vue  # 侧边栏组件
-│       │   │   ├── ToolsPanel.vue # 工具面板组件
-│       │   │   └── ...          # 其他功能组件
-│       │   ├── assets/styles/   # 样式文件
-│       │   └── main.ts         # Vue 应用入口
+│       │   ├── components/      # Vue components
+│       │   │   ├── MainApp.vue  # Main application component
+│       │   │   ├── Sidebar.vue  # Sidebar component
+│       │   │   ├── ToolsPanel.vue # Tools panel component
+│       │   │   └── ...          # Other feature components
+│       │   ├── assets/styles/   # Style files
+│       │   └── main.ts         # Vue application entry
 │       ├── package.json
 │       └── vite.config.ts
-├── package.json                 # 扩展配置和依赖
-├── webpack.config.js           # Webpack 构建配置
-└── tsconfig.json              # TypeScript 配置
+├── package.json                 # Extension configuration and dependencies
+├── webpack.config.js           # Webpack build configuration
+└── tsconfig.json              # TypeScript configuration
 ```
 
-### 架构特点
+### Architecture Features
 
-1. **分层架构**: 
-   - **扩展层**: VSCode 扩展 API 集成
-   - **业务层**: MCP 协议处理和状态管理
-   - **表现层**: Vue.js WebView 界面
+1. **Layered Architecture**: 
+   - **Extension Layer**: VSCode extension API integration
+   - **Business Layer**: MCP protocol handling and state management
+   - **Presentation Layer**: Vue.js WebView interface
 
-2. **事件驱动**: 
-   - 使用 EventEmitter 进行组件间通信
-   - 支持实时状态更新和通知
+2. **Event-Driven**: 
+   - Use EventEmitter for inter-component communication
+   - Support real-time status updates and notifications
 
-3. **模块化设计**: 
-   - 独立的服务器管理器模块
-   - 可复用的 Vue 组件
-   - 清晰的职责分离
+3. **Modular Design**: 
+   - Independent server manager module
+   - Reusable Vue components
+   - Clear separation of responsibilities
 
-## 🔧 开发指南
+## 🔧 Development Guide
 
-### 开发环境要求
+### Development Environment Requirements
 
 - **Node.js**: >= 16.x
 - **npm**: >= 7.x
 - **VSCode**: >= 1.74.0
 - **TypeScript**: >= 4.9.x
 
-### 开发脚本
+### Development Scripts
 
-| 命令 | 描述 |
-|------|------|
-| `npm run compile` | 编译 TypeScript 和构建 Vue 应用 |
-| `npm run watch` | 监视模式编译 |
-| `npm run build` | 完整构建项目 |
-| `npm run dev-webview` | 开发模式运行 Vue 应用 |
-| `npm run build-webview` | 构建 Vue 应用 |
-| `npm run install-webview` | 安装 Vue 应用依赖 |
-| `npm run lint` | 代码检查 |
-| `npm run package` | 生产环境打包 |
+| Command | Description |
+|---------|-------------|
+| `npm run compile` | Compile TypeScript and build Vue app |
+| `npm run watch` | Watch mode compilation |
+| `npm run build` | Complete project build |
+| `npm run dev-webview` | Run Vue app in development mode |
+| `npm run build-webview` | Build Vue app |
+| `npm run install-webview` | Install Vue app dependencies |
+| `npm run lint` | Code linting |
+| `npm run package` | Production build |
 
-### Vue WebView 开发
+### Vue WebView Development
 
- Vue 前端界面位于 `src/vue-webview/` 目录：
+The Vue frontend interface is located in the `src/vue-webview/` directory:
 
 ```bash
-# 进入 Vue 项目目录
+# Navigate to Vue project directory
 cd src/vue-webview
 
-# 安装依赖
+# Install dependencies
 npm install
 
-# 开发模式
+# Development mode
 npm run dev
 
-# 构建生产版本
+# Build production version
 npm run build
 ```
 
-### 添加新功能
+### Adding New Features
 
-1. **添加新的 MCP 协议功能**:
-   - 在 `MCPServerManager` 中添加新方法
-   - 在 `MCPTesterProvider` 中添加消息处理
-   - 在 Vue 组件中添加 UI 交互
+1. **Add New MCP Protocol Feature**:
+   - Add new method in `MCPServerManager`
+   - Add message handling in `MCPTesterProvider`
+   - Add UI interaction in Vue components
 
-2. **添加新的 Vue 组件**:
-   - 在 `src/vue-webview/src/components/` 创建组件
-   - 在 `MainApp.vue` 中引入和使用
-   - 添加相应的样式和交互逻辑
+2. **Add New Vue Component**:
+   - Create component in `src/vue-webview/src/components/`
+   - Import and use in `MainApp.vue`
+   - Add corresponding styles and interaction logic
 
-3. **添加新的 VSCode 命令**:
-   - 在 `package.json` 的 `contributes.commands` 中声明
-   - 在 `extension.ts` 中注册命令处理器
+3. **Add New VSCode Command**:
+   - Declare in `package.json`'s `contributes.commands`
+   - Register command handler in `extension.ts`
 
-## 🧪 测试
+## 🧪 Testing
 
-### 单元测试
+### Unit Tests
 
 ```bash
-# 运行测试
+# Run tests
 npm test
 
-# 监视模式测试
+# Watch mode testing
 npm run test:watch
 ```
 
-### 集成测试
+### Integration Tests
 
-1. **测试 STDIO 传输**:
+1. **Test STDIO Transport**:
 ```bash
-# 使用官方示例服务器
+# Use official example server
 npx @modelcontextprotocol/server-everything
 ```
 
-2. **测试 HTTP 传输**:
+2. **Test HTTP Transport**:
 ```bash
-# 启动 HTTP MCP 服务器
-# 然后在扩展中连接到相应 URL
+# Start HTTP MCP server
+# Then connect to the corresponding URL in the extension
 ```
 
-### 调试技巧
+### Debugging Tips
 
-1. **启用详细日志**:
-   - 在设置中启用 `mcp-tester.enableLogging`
-   - 查看 VSCode 开发者控制台输出
+1. **Enable Verbose Logging**:
+   - Enable `mcp-tester.enableLogging` in settings
+   - Check VSCode developer console output
 
 2. **Vue DevTools**:
-   - 在开发模式下可以使用 Vue DevTools
-   - WebView 调试需要启用开发者模式
+   - Can use Vue DevTools in development mode
+   - WebView debugging requires enabling developer mode
 
-3. **网络调试**:
-   - 使用浏览器开发者工具监控 HTTP 请求
-   - 检查 WebSocket 连接状态
+3. **Network Debugging**:
+   - Use browser developer tools to monitor HTTP requests
+   - Check WebSocket connection status
 
-## 🤝 贡献指南
+## 🤝 Contributing
 
-### 提交代码
+### Code Submission
 
-1. Fork 项目
-2. 创建功能分支 (`git checkout -b feature/amazing-feature`)
-3. 提交更改 (`git commit -m 'Add some amazing feature'`)
-4. 推送到分支 (`git push origin feature/amazing-feature`)
-5. 开启 Pull Request
+1. Fork the project
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add some amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open Pull Request
 
-### 代码规范
+### Code Standards
 
-- **TypeScript**: 使用严格模式，提供完整类型注解
-- **Vue**: 使用 Composition API 和 `<script setup>` 语法
-- **样式**: 使用 VSCode 主题变量，保持一致性
-- **注释**: 重要逻辑提供中文注释
+- **TypeScript**: Use strict mode with complete type annotations
+- **Vue**: Use Composition API and `<script setup>` syntax
+- **Styles**: Use VSCode theme variables for consistency
+- **Comments**: Provide clear comments for important logic
 
-### 提交信息格式
+### Commit Message Format
 
 ```
 type(scope): description
@@ -391,11 +400,34 @@ type(scope): description
 [optional footer]
 ```
 
-类型包括:
-- `feat`: 新功能
-- `fix`: 错误修复
-- `docs`: 文档更新
-- `style`: 代码格式化
-- `refactor`: 代码重构
-- `test`: 测试相关
-- `chore`: 构建或辅助工具变动
+Types include:
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation update
+- `style`: Code formatting
+- `refactor`: Code refactoring
+- `test`: Test related
+- `chore`: Build or tool changes
+
+## 📝 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🙏 Acknowledgments
+
+- Model Context Protocol (MCP) team for the protocol specification
+- VSCode team for the excellent extension API
+- Vue.js team for the reactive framework
+- All contributors who have helped improve this project
+
+## 📞 Support
+
+- **Issues**: [GitHub Issues](https://github.com/your-repo/mcp-tester/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/your-repo/mcp-tester/discussions)
+- **Email**: support@example.com
+
+---
+
+**Developer**: Echo AI  
+**Version**: 0.0.2  
+**Last Updated**: November 2024
