@@ -1,0 +1,38 @@
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <!-- Optimized for VSCode Activity Bar - transparent background, simple iconic design -->
+  
+  <!-- Background rounded square (optional, can be removed for full transparency) -->
+  <rect width="128" height="128" rx="16" fill="#007ACC" opacity="0.15"/>
+  
+  <!-- Main icon container -->
+  <g transform="translate(64, 64)">
+    
+    <!-- MCP Letter 'M' - simplified and bold -->
+    <path d="M -38 -25 L -38 25 L -30 25 L -30 -8 L -15 15 L -7 15 L 8 -8 L 8 25 L 16 25 L 16 -25 L 6 -25 L -11 5 L -28 -25 Z" 
+          fill="#C5C5C5" stroke="none"/>
+    
+    <!-- Protocol/Connection Symbol - simplified network icon -->
+    <g transform="translate(24, -5)">
+      <!-- Central hub -->
+      <circle cx="0" cy="0" r="6" fill="#C5C5C5" stroke="none"/>
+      
+      <!-- Connection lines (4 directions) -->
+      <line x1="0" y1="0" x2="0" y2="-16" stroke="#C5C5C5" stroke-width="3" stroke-linecap="round"/>
+      <line x1="0" y1="0" x2="16" y2="0" stroke="#C5C5C5" stroke-width="3" stroke-linecap="round"/>
+      <line x1="0" y1="0" x2="0" y2="16" stroke="#C5C5C5" stroke-width="3" stroke-linecap="round"/>
+      <line x1="0" y1="0" x2="-16" y2="0" stroke="#C5C5C5" stroke-width="3" stroke-linecap="round"/>
+      
+      <!-- Endpoint dots -->
+      <circle cx="0" cy="-16" r="4" fill="#75BEFF" stroke="none"/>
+      <circle cx="16" cy="0" r="4" fill="#75BEFF" stroke="none"/>
+      <circle cx="0" cy="16" r="4" fill="#75BEFF" stroke="none"/>
+      <circle cx="-16" cy="0" r="4" fill="#75BEFF" stroke="none"/>
+    </g>
+    
+    <!-- Test/Debug indicator - small checkmark or play symbol -->
+    <g transform="translate(-38, 18)">
+      <path d="M 0 0 L 4 4 L 10 -4" fill="none" stroke="#75BEFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    
+  </g>
+</svg>
