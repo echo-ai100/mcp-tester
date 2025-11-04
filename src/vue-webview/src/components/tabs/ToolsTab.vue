@@ -3,13 +3,13 @@
     <!-- 头部控制 -->
     <div class="flex-shrink-0 p-4 border-b border-vscode-panel-border">
       <div class="flex justify-between items-center">
-        <h3 class="text-sm font-medium text-vscode-foreground">工具列表</h3>
+        <h3 class="text-sm font-medium text-vscode-foreground">Tools List</h3>
         <button
           @click="$emit('refresh')"
           :disabled="!isConnected || loading"
           class="btn-secondary text-xs disabled:opacity-50"
         >
-          {{ loading ? '加载中...' : '刷新' }}
+          {{ loading ? 'Loading...' : 'Refresh' }}
         </button>
       </div>
     </div>
@@ -17,11 +17,11 @@
     <!-- 工具列表 -->
     <div class="flex-1 overflow-y-auto">
       <div v-if="loading" class="text-center py-8 text-vscode-foreground opacity-75">
-        正在加载工具...
+        Loading tools...
       </div>
       
       <div v-else-if="tools.length === 0" class="text-center py-8 text-vscode-foreground opacity-75">
-        {{ isConnected ? '没有可用的工具' : '请先连接到服务器' }}
+        {{ isConnected ? 'No tools available' : 'Please connect to a server first' }}
       </div>
       
       <div v-else class="p-4 space-y-3">
@@ -39,7 +39,7 @@
               
               <!-- 参数信息 -->
               <div v-if="tool.inputSchema && hasProperties(tool.inputSchema)" class="mb-3">
-                <div class="text-xs text-vscode-foreground opacity-60 mb-2">参数:</div>
+                <div class="text-xs text-vscode-foreground opacity-60 mb-2">Parameters:</div>
                 <div class="bg-vscode-editor-background rounded p-2 text-xs text-vscode-editor-foreground font-mono">
                   <div v-for="(prop, name) in tool.inputSchema.properties" :key="name" class="mb-1">
                     <span class="text-blue-300">{{ name }}</span>
@@ -58,7 +58,7 @@
               :disabled="!isConnected"
               class="ml-3 btn-primary text-sm disabled:opacity-50 flex-shrink-0"
             >
-              调用
+              Call
             </button>
           </div>
         </div>
@@ -69,14 +69,14 @@
     <div v-if="showCallModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-vscode-panel-bg rounded-md p-6 w-11/12 max-w-2xl max-h-5/6 overflow-y-auto border border-vscode-panel-border">
         <div class="flex justify-between items-center mb-4">
-          <h3 class="text-lg font-semibold text-vscode-foreground">调用工具: {{ selectedTool?.name }}</h3>
+          <h3 class="text-lg font-semibold text-vscode-foreground">Call Tool: {{ selectedTool?.name }}</h3>
           <button @click="showCallModal = false" class="text-vscode-foreground hover:text-red-400">
             ✕
           </button>
         </div>
         
         <div class="mb-4">
-          <label class="block text-sm font-medium text-vscode-foreground mb-2">参数 (JSON):</label>
+          <label class="block text-sm font-medium text-vscode-foreground mb-2">Parameters (JSON):</label>
           <textarea
             v-model="toolArguments"
             class="w-full h-32 bg-vscode-editor-background text-vscode-editor-foreground border border-vscode-panel-border rounded p-2 font-mono text-sm resize-none"
@@ -84,14 +84,14 @@
             @keydown.ctrl.enter="executeTool"
           ></textarea>
           <div class="text-xs text-vscode-foreground opacity-60 mt-1">
-            提示: 使用 Ctrl+Enter 快速执行
+            Tip: Use Ctrl+Enter for quick execution
           </div>
         </div>
         
         <div class="flex justify-end space-x-3">
-          <button @click="showCallModal = false" class="btn-secondary">取消</button>
+          <button @click="showCallModal = false" class="btn-secondary">Cancel</button>
           <button @click="executeTool" :disabled="executing" class="btn-primary">
-            {{ executing ? '执行中...' : '执行工具' }}
+            {{ executing ? 'Executing...' : 'Execute Tool' }}
           </button>
         </div>
       </div>
@@ -180,7 +180,7 @@ const executeTool = async () => {
     showCallModal.value = false;
   } catch (error) {
     console.error('ToolsTab: Error parsing tool arguments', error);
-    alert('参数格式错误，请检查JSON格式');
+    alert('Invalid parameter format, please check JSON syntax');
   } finally {
     executing.value = false;
   }

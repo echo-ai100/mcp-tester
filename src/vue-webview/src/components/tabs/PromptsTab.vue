@@ -3,13 +3,13 @@
     <!-- 头部控制 -->
     <div class="flex-shrink-0 p-4 border-b border-vscode-panel-border">
       <div class="flex justify-between items-center">
-        <h3 class="text-sm font-medium text-vscode-foreground">提示词列表</h3>
+        <h3 class="text-sm font-medium text-vscode-foreground">Prompts List</h3>
         <button
           @click="$emit('refresh')"
           :disabled="!isConnected || loading"
           class="btn-secondary text-xs disabled:opacity-50"
         >
-          {{ loading ? '加载中...' : '刷新' }}
+          {{ loading ? 'Loading...' : 'Refresh' }}
         </button>
       </div>
     </div>
@@ -17,11 +17,11 @@
     <!-- 提示词列表 -->
     <div class="flex-1 overflow-y-auto">
       <div v-if="loading" class="text-center py-8 text-vscode-foreground opacity-75">
-        正在加载提示词...
+        Loading prompts...
       </div>
       
       <div v-else-if="prompts.length === 0" class="text-center py-8 text-vscode-foreground opacity-75">
-        {{ isConnected ? '没有可用的提示词' : '请先连接到服务器' }}
+        {{ isConnected ? 'No prompts available' : 'Please connect to a server first' }}
       </div>
       
       <div v-else class="p-4 space-y-3">
@@ -39,7 +39,7 @@
               
               <!-- 参数信息 -->
               <div v-if="prompt.arguments && prompt.arguments.length > 0" class="mb-3">
-                <div class="text-xs text-vscode-foreground opacity-60 mb-2">参数:</div>
+                <div class="text-xs text-vscode-foreground opacity-60 mb-2">Parameters:</div>
                 <div class="bg-vscode-editor-background rounded p-2 text-xs text-vscode-editor-foreground font-mono">
                   <div v-for="arg in prompt.arguments" :key="arg.name" class="mb-1">
                     <span class="text-blue-300">{{ arg.name }}</span>
@@ -51,7 +51,7 @@
               
               <!-- 显示提示词内容 -->
               <div v-if="promptContent && showingPrompt === prompt.name" class="mt-3">
-                <div class="text-xs text-vscode-foreground opacity-60 mb-2">生成的提示词:</div>
+                <div class="text-xs text-vscode-foreground opacity-60 mb-2">Generated Prompt:</div>
                 <div class="bg-vscode-editor-background rounded p-3 text-sm text-vscode-editor-foreground max-h-60 overflow-y-auto">
                   <div v-if="promptContent.messages && promptContent.messages.length > 0">
                     <div v-for="(message, index) in promptContent.messages" :key="index" class="mb-3 last:mb-0">
@@ -78,7 +78,7 @@
               :disabled="!isConnected"
               class="ml-3 btn-primary text-sm disabled:opacity-50 flex-shrink-0"
             >
-              获取
+              Get
             </button>
           </div>
         </div>
@@ -89,7 +89,7 @@
     <div v-if="showArgsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-vscode-panel-bg rounded-md p-6 w-11/12 max-w-2xl max-h-5/6 overflow-y-auto border border-vscode-panel-border">
         <div class="flex justify-between items-center mb-4">
-          <h3 class="text-lg font-semibold text-vscode-foreground">获取提示词: {{ selectedPrompt?.name }}</h3>
+          <h3 class="text-lg font-semibold text-vscode-foreground">Get Prompt: {{ selectedPrompt?.name }}</h3>
           <button @click="showArgsModal = false" class="text-vscode-foreground hover:text-red-400">
             ✕
           </button>
@@ -104,7 +104,7 @@
             <input
               v-model="promptArguments[arg.name]"
               type="text"
-              :placeholder="arg.description || `请输入 ${arg.name}`"
+              :placeholder="arg.description || `Please enter ${arg.name}`"
               class="w-full bg-vscode-editor-background text-vscode-editor-foreground border border-vscode-panel-border rounded p-2 text-sm"
             />
             <div v-if="arg.description" class="text-xs text-vscode-foreground opacity-60 mt-1">
@@ -114,13 +114,13 @@
         </div>
         
         <div v-else class="mb-6 text-vscode-foreground opacity-75">
-          此提示词不需要参数
+          This prompt does not require parameters
         </div>
         
         <div class="flex justify-end space-x-3">
-          <button @click="showArgsModal = false" class="btn-secondary">取消</button>
+          <button @click="showArgsModal = false" class="btn-secondary">Cancel</button>
           <button @click="executeGetPrompt" :disabled="executing" class="btn-primary">
-            {{ executing ? '获取中...' : '获取提示词' }}
+            {{ executing ? 'Getting...' : 'Get Prompt' }}
           </button>
         </div>
       </div>
@@ -170,7 +170,7 @@ const handleGetPromptClick = (prompt: any) => {
   
   // 如果有参数，显示参数输入框
   if (prompt.arguments && prompt.arguments.length > 0) {
-    console.log('[PromptsTab] 显示参数输入框');
+    console.log('[PromptsTab] Show parameter input');
     // 初始化参数
     prompt.arguments.forEach((arg: any) => {
       // 如果有默认值则使用默认值，否则初始化为空字符串
@@ -179,7 +179,7 @@ const handleGetPromptClick = (prompt: any) => {
     showArgsModal.value = true;
     console.log('[PromptsTab] showArgsModal set to true');
   } else {
-    console.log('[PromptsTab] 无参数，直接获取提示词');
+    console.log('[PromptsTab] No parameters, get prompt directly');
     // 直接获取提示词
     executeGetPrompt();
   }
@@ -199,13 +199,13 @@ const executeGetPrompt = async () => {
   try {
     // 验证必需参数
     if (selectedPrompt.value.arguments) {
-      console.log('[PromptsTab] 验证必需参数...');
+      console.log('[PromptsTab] Validate required parameters...');
       for (const arg of selectedPrompt.value.arguments) {
         const value = promptArguments[arg.name];
-        console.log(`[PromptsTab] 检查参数 ${arg.name}: required=${arg.required}, value=${value}`);
+        console.log(`[PromptsTab] Check parameter ${arg.name}: required=${arg.required}, value=${value}`);
         if (arg.required && (value === undefined || value === '')) {
-          console.log(`[PromptsTab] 参数 "${arg.name}" 是必需的，但未填写`);
-          alert(`参数 "${arg.name}" 是必需的`);
+          console.log(`[PromptsTab] Parameter "${arg.name}" is required but not filled`);
+          alert(`Parameter "${arg.name}" is required`);
           executing.value = false;
           return;
         }
@@ -224,13 +224,13 @@ const executeGetPrompt = async () => {
       }
     }
     
-    console.log('[PromptsTab] 发送get-prompt事件, name:', selectedPrompt.value.name, 'args:', args);
+    console.log('[PromptsTab] Send get-prompt event, name:', selectedPrompt.value.name, 'args:', args);
     emit('get-prompt', selectedPrompt.value.name, args);
     showingPrompt.value = selectedPrompt.value.name;
     showArgsModal.value = false;
   } catch (error) {
-    console.error('[PromptsTab] 获取提示词失败:', error);
-    alert('获取提示词失败: ' + (error instanceof Error ? error.message : String(error)));
+    console.error('[PromptsTab] Failed to get prompt:', error);
+    alert('Failed to get prompt: ' + (error instanceof Error ? error.message : String(error)));
   } finally {
     executing.value = false;
   }

@@ -3,13 +3,13 @@
     <!-- 头部控制 -->
     <div class="flex-shrink-0 p-4 border-b border-vscode-panel-border">
       <div class="flex justify-between items-center">
-        <h3 class="text-sm font-medium text-vscode-foreground">资源列表</h3>
+        <h3 class="text-sm font-medium text-vscode-foreground">Resources List</h3>
         <button
           @click="$emit('refresh')"
           :disabled="!isConnected || loading"
           class="btn-secondary text-xs disabled:opacity-50"
         >
-          {{ loading ? '加载中...' : '刷新' }}
+          {{ loading ? 'Loading...' : 'Refresh' }}
         </button>
       </div>
     </div>
@@ -17,18 +17,18 @@
     <!-- 资源列表 -->
     <div class="flex-1 overflow-y-auto">
       <div v-if="loading" class="text-center py-8 text-vscode-foreground opacity-75">
-        正在加载资源...
+        Loading resources...
       </div>
       
       <div v-else-if="resources.length === 0 && resourceTemplates.length === 0" class="text-center py-8 text-vscode-foreground opacity-75">
-        {{ isConnected ? '没有可用的资源' : '请先连接到服务器' }}
+        {{ isConnected ? 'No resources available' : 'Please connect to a server first' }}
       </div>
       
       <div v-else class="p-4">
         <!-- 资源模板 -->
         <div v-if="resourceTemplates.length > 0" class="mb-6">
           <h4 class="text-sm font-medium text-vscode-foreground mb-3 border-b border-vscode-panel-border pb-2">
-            资源模板
+            Resource Templates
           </h4>
           <div class="space-y-3">
             <div
@@ -43,12 +43,12 @@
                     {{ template.description }}
                   </p>
                   <div class="text-xs text-vscode-foreground opacity-60 mb-2">
-                    模板: {{ template.uriTemplate }}
+                    Template: {{ template.uriTemplate }}
                   </div>
                   
                   <!-- 显示资源模板内容 -->
                   <div v-if="resourceContent[getTemplateKey(template)]" class="mt-3">
-                    <div class="text-xs text-vscode-foreground opacity-60 mb-2">内容:</div>
+                    <div class="text-xs text-vscode-foreground opacity-60 mb-2">Content:</div>
                     <div class="bg-vscode-editor-background rounded p-3 text-xs text-vscode-editor-foreground font-mono max-h-40 overflow-y-auto">
                       <pre>{{ formatResourceContent(resourceContent[getTemplateKey(template)]) }}</pre>
                     </div>
@@ -61,7 +61,7 @@
                     :disabled="!isConnected"
                     class="btn-primary text-sm disabled:opacity-50"
                   >
-                    读取
+                    Read
                   </button>
                 </div>
               </div>
@@ -72,7 +72,7 @@
         <!-- 常规资源 -->
         <div v-if="resources.length > 0">
           <h4 class="text-sm font-medium text-vscode-foreground mb-3 border-b border-vscode-panel-border pb-2">
-            资源
+            Resources
           </h4>
           <div class="space-y-3">
             <div
@@ -90,12 +90,12 @@
                     URI: {{ resource.uri }}
                   </div>
                   <div v-if="resource.mimeType" class="text-xs text-vscode-foreground opacity-60 mb-2">
-                    类型: {{ resource.mimeType }}
+                    Type: {{ resource.mimeType }}
                   </div>
                   
                   <!-- 显示资源内容 -->
                   <div v-if="resourceContent[resource.uri]" class="mt-3">
-                    <div class="text-xs text-vscode-foreground opacity-60 mb-2">内容:</div>
+                    <div class="text-xs text-vscode-foreground opacity-60 mb-2">Content:</div>
                     <div class="bg-vscode-editor-background rounded p-3 text-xs text-vscode-editor-foreground font-mono max-h-40 overflow-y-auto">
                       <pre>{{ formatResourceContent(resourceContent[resource.uri]) }}</pre>
                     </div>
@@ -108,14 +108,14 @@
                     :disabled="!isConnected"
                     class="btn-primary text-sm disabled:opacity-50"
                   >
-                    读取
+                    Read
                   </button>
                   <button
                     @click="subscribeResource(resource.uri)"
                     :disabled="!isConnected"
                     class="btn-secondary text-xs disabled:opacity-50"
                   >
-                    订阅
+                    Subscribe
                   </button>
                   <button
                     v-if="isSubscribed(resource.uri)"
@@ -123,7 +123,7 @@
                     :disabled="!isConnected"
                     class="btn-secondary text-xs disabled:opacity-50"
                   >
-                    取消订阅
+                    Unsubscribe
                   </button>
                 </div>
               </div>
@@ -137,7 +137,7 @@
     <div v-if="showArgsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-vscode-panel-bg rounded-md p-6 w-11/12 max-w-2xl max-h-5/6 overflow-y-auto border border-vscode-panel-border">
         <div class="flex justify-between items-center mb-4">
-          <h3 class="text-lg font-semibold text-vscode-foreground">读取资源: {{ selectedTemplate?.name || selectedTemplate?.uriTemplate }}</h3>
+          <h3 class="text-lg font-semibold text-vscode-foreground">Read Resource: {{ selectedTemplate?.name || selectedTemplate?.uriTemplate }}</h3>
           <button @click="cancelArgsInput" class="text-vscode-foreground hover:text-red-400">
             ✕
           </button>
@@ -145,7 +145,7 @@
         
         <div class="mb-4">
           <div class="text-sm text-vscode-foreground opacity-75 mb-3">
-            URI模板: {{ selectedTemplate?.uriTemplate }}
+            URI Template: {{ selectedTemplate?.uriTemplate }}
           </div>
           
           <div class="space-y-3">
@@ -157,15 +157,15 @@
                 v-model="templateArguments[key]"
                 type="text"
                 class="w-full bg-vscode-editor-background text-vscode-editor-foreground border border-vscode-panel-border rounded p-2 text-sm"
-                :placeholder="`输入 ${key}`"
+                :placeholder="`Enter ${key}`"
               />
             </div>
           </div>
         </div>
         
         <div class="flex justify-end space-x-3">
-          <button @click="cancelArgsInput" class="btn-secondary">取消</button>
-          <button @click="executeReadTemplate()" class="btn-primary">读取资源</button>
+          <button @click="cancelArgsInput" class="btn-secondary">Cancel</button>
+          <button @click="executeReadTemplate()" class="btn-primary">Read Resource</button>
         </div>
       </div>
     </div>
@@ -276,14 +276,14 @@ const handleReadTemplateClick = (template: any) => {
   
   // 如果有参数,显示参数输入框
   if (params.length > 0) {
-    console.log('[ResourcesTab] 显示参数输入框');
+    console.log('[ResourcesTab] Show parameter input');
     params.forEach(param => {
       templateArguments[param] = '';
     });
     showArgsModal.value = true;
     console.log('[ResourcesTab] showArgsModal set to true');
   } else {
-    console.log('[ResourcesTab] 无参数,直接读取资源');
+    console.log('[ResourcesTab] No parameters, read resource directly');
     executeReadTemplate(template.uriTemplate);
   }
 };

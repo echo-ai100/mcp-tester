@@ -10,7 +10,7 @@
         <div class="mt-2 flex items-center text-sm">
           <span class="w-2 h-2 rounded-full mr-2" :class="connectionStatus === 'connected' ? 'bg-green-500' : 'bg-red-500'"></span>
           <span :class="connectionStatus === 'connected' ? 'text-green-400' : 'text-red-400'">
-            {{ connectionStatus === 'connected' ? '已连接' : '未连接' }}
+            {{ connectionStatus === 'connected' ? 'Connected' : 'Disconnected' }}
           </span>
         </div>
       </div>
@@ -19,7 +19,7 @@
         <div class="space-y-4">
           <div>
             <label class="block text-sm font-medium mb-2 text-vscode-foreground">
-              传输类型
+              Transport Type
             </label>
             <select v-model="transportType" class="w-full input-field">
               <option value="stdio">STDIO</option>
@@ -31,16 +31,16 @@
           <!-- STDIO 配置 -->
           <div v-if="transportType === 'stdio'" class="space-y-3">
             <div>
-              <label class="block text-sm font-medium mb-1 text-vscode-foreground">命令</label>
+              <label class="block text-sm font-medium mb-1 text-vscode-foreground">Command</label>
               <input 
                 v-model="config.command" 
                 type="text" 
                 class="w-full input-field"
-                placeholder="node server.js 或 npx @modelcontextprotocol/server-everything"
+                placeholder="node server.js or npx @modelcontextprotocol/server-everything"
               >
             </div>
             <div>
-              <label class="block text-sm font-medium mb-1 text-vscode-foreground">参数（可选）</label>
+              <label class="block text-sm font-medium mb-1 text-vscode-foreground">Arguments (Optional)</label>
               <input 
                 v-model="argsInput" 
                 type="text" 
@@ -49,7 +49,7 @@
               >
             </div>
             <div>
-              <label class="block text-sm font-medium mb-1 text-vscode-foreground">环境变量（JSON格式，可选）</label>
+              <label class="block text-sm font-medium mb-1 text-vscode-foreground">Environment Variables (JSON, Optional)</label>
               <textarea 
                 v-model="envVarsInput" 
                 class="w-full input-field text-xs" 
@@ -73,7 +73,7 @@
               >
             </div>
             <div>
-              <label class="block text-sm font-medium mb-1 text-vscode-foreground">自定义Headers（JSON格式，可选）</label>
+              <label class="block text-sm font-medium mb-1 text-vscode-foreground">Custom Headers (JSON, Optional)</label>
               <textarea 
                 v-model="headersInput" 
                 class="w-full input-field text-xs" 
@@ -84,7 +84,7 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium mb-1 text-vscode-foreground">服务器名称</label>
+            <label class="block text-sm font-medium mb-1 text-vscode-foreground">Server Name</label>
             <input 
               v-model="serverName" 
               type="text" 
@@ -101,7 +101,7 @@
             :disabled="!canConnect || connectionStatus === 'connecting'" 
             class="w-full btn-primary disabled:opacity-50"
           >
-            {{ connectionStatus === 'connecting' ? '连接中...' : (connectionStatus === 'connected' ? '重新连接' : '连接') }}
+            {{ connectionStatus === 'connecting' ? 'Connecting...' : (connectionStatus === 'connected' ? 'Reconnect' : 'Connect') }}
           </button>
           
           <button 
@@ -109,7 +109,7 @@
             @click="handleDisconnect" 
             class="w-full btn-secondary"
           >
-            断开连接
+            Disconnect
           </button>
           
           <button 
@@ -117,13 +117,13 @@
             @click="handleOpenToolsPanel" 
             class="w-full btn-primary"
           >
-            打开工具面板
+            Open Tools Panel
           </button>
         </div>
         
         <!-- 保存的服务器 -->
         <div v-if="savedServers.length > 0" class="mt-6">
-          <h3 class="text-sm font-medium mb-3 text-vscode-foreground">已保存的服务器</h3>
+          <h3 class="text-sm font-medium mb-3 text-vscode-foreground">Saved Servers</h3>
           <div class="space-y-2">
             <div 
               v-for="server in savedServers" 
@@ -140,14 +140,14 @@
                   <button 
                     @click.stop="connectToSavedServer(server)" 
                     class="text-green-400 hover:text-green-300 p-1" 
-                    title="连接"
+                    title="Connect"
                   >
                     ▶
                   </button>
                   <button 
                     @click.stop="postMessage({ type: 'delete-server', name: server.name })" 
                     class="text-red-400 hover:text-red-300 p-1" 
-                    title="删除"
+                    title="Delete"
                   >
                     ×
                   </button>
@@ -174,7 +174,7 @@
           <div class="flex items-center text-sm mb-4">
             <span class="w-2 h-2 rounded-full mr-2" :class="connectionStatus === 'connected' ? 'bg-green-500' : 'bg-red-500'"></span>
             <span :class="connectionStatus === 'connected' ? 'text-green-400' : 'text-red-400'">
-              {{ connectionStatus === 'connected' ? '已连接' : '未连接' }}
+              {{ connectionStatus === 'connected' ? 'Connected' : 'Disconnected' }}
             </span>
             <button 
               v-if="connectionStatus === 'connected'" 
@@ -212,19 +212,19 @@
           <div v-show="activeTab === 'tools'" class="h-full flex flex-col">
             <div class="flex-shrink-0 p-4 border-b border-vscode-panel-border">
               <div class="flex justify-between items-center">
-                <h3 class="text-sm font-medium text-vscode-foreground">工具列表</h3>
+                <h3 class="text-sm font-medium text-vscode-foreground">Tools List</h3>
                 <button
                   @click="handleListTools"
                   :disabled="connectionStatus !== 'connected'"
                   class="btn-secondary text-xs disabled:opacity-50"
                 >
-                  刷新
+                  Refresh
                 </button>
               </div>
             </div>
             <div class="flex-1 overflow-y-auto p-4">
               <div v-if="tools.length === 0" class="text-center py-8 text-vscode-foreground opacity-75">
-                {{ connectionStatus === 'connected' ? '没有可用的工具' : '请先连接到服务器' }}
+                {{ connectionStatus === 'connected' ? 'No tools available' : 'Please connect to a server first' }}
               </div>
               <div v-else class="space-y-3">
                 <div
@@ -240,7 +240,7 @@
                       </p>
                       <!-- 参数信息 -->
                       <div v-if="tool.inputSchema && tool.inputSchema.properties && Object.keys(tool.inputSchema.properties).length > 0" class="mb-3">
-                        <div class="text-xs text-vscode-foreground opacity-60 mb-2">参数:</div>
+                        <div class="text-xs text-vscode-foreground opacity-60 mb-2">Parameters:</div>
                         <div class="bg-vscode-editor-background rounded p-2 text-xs text-vscode-editor-foreground font-mono">
                           <div v-for="(prop, name) in tool.inputSchema.properties" :key="name" class="mb-1">
                             <span class="text-blue-300">{{ name }}</span>
@@ -258,7 +258,7 @@
                       :disabled="connectionStatus !== 'connected'"
                       class="ml-3 btn-primary text-sm disabled:opacity-50 flex-shrink-0"
                     >
-                      调用
+                      Call
                     </button>
                   </div>
                 </div>
@@ -295,9 +295,9 @@
         <!-- 工具执行结果展示区域 -->
         <div v-if="toolExecutionResult && activeTab === 'tools'" class="border-t border-vscode-panel-border p-4 bg-vscode-panel-bg">
           <div class="flex justify-between items-center mb-2">
-            <h4 class="text-sm font-medium text-vscode-foreground">执行结果</h4>
+            <h4 class="text-sm font-medium text-vscode-foreground">Execution Result</h4>
             <button @click="clearToolResult" class="text-vscode-foreground hover:text-red-400 text-xs">
-              清除
+              Clear
             </button>
           </div>
           <pre class="bg-vscode-editor-background p-3 rounded text-xs text-vscode-editor-foreground overflow-auto max-h-40">{{ formatToolResult(toolExecutionResult) }}</pre>
@@ -307,15 +307,15 @@
       <!-- 主视图 -->
       <div v-else-if="isMainView" class="main-view">
         <div v-if="connectionStatus === 'connected'" class="connected-content">
-          <h2>MCP 服务器已连接</h2>
-          <p>服务器能力：{{ Object.keys(serverCapabilities).join(', ') }}</p>
+          <h2>MCP Server Connected</h2>
+          <p>Server Capabilities: {{ Object.keys(serverCapabilities).join(', ') }}</p>
           <button @click="handleOpenToolsPanel" class="primary-button">
-            打开工具面板
+            Open Tools Panel
           </button>
         </div>
         <div v-else class="disconnected-content">
           <h2>MCP Tester</h2>
-          <p>请在左侧配置并连接到 MCP 服务器</p>
+          <p>Please configure and connect to an MCP server on the left</p>
         </div>
       </div>
     </div>
@@ -324,14 +324,14 @@
     <div v-if="showCallModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-vscode-panel-bg rounded-md p-6 w-11/12 max-w-2xl max-h-5/6 overflow-y-auto border border-vscode-panel-border">
         <div class="flex justify-between items-center mb-4">
-          <h3 class="text-lg font-semibold text-vscode-foreground">调用工具: {{ selectedTool?.name }}</h3>
+          <h3 class="text-lg font-semibold text-vscode-foreground">Call Tool: {{ selectedTool?.name }}</h3>
           <button @click="showCallModal = false" class="text-vscode-foreground hover:text-red-400">
             ✕
           </button>
         </div>
         
         <div class="mb-4">
-          <label class="block text-sm font-medium text-vscode-foreground mb-2">参数 (JSON):</label>
+          <label class="block text-sm font-medium text-vscode-foreground mb-2">Parameters (JSON):</label>
           <textarea
             v-model="toolArguments"
             class="w-full h-32 bg-vscode-editor-background text-vscode-editor-foreground border border-vscode-panel-border rounded p-2 font-mono text-sm resize-none"
@@ -339,14 +339,14 @@
             @keydown.ctrl.enter="executeTool"
           ></textarea>
           <div class="text-xs text-vscode-foreground opacity-60 mt-1">
-            提示: 使用 Ctrl+Enter 快速执行
+            Tip: Use Ctrl+Enter for quick execution
           </div>
         </div>
         
         <div class="flex justify-end space-x-3">
-          <button @click="showCallModal = false" class="btn-secondary">取消</button>
+          <button @click="showCallModal = false" class="btn-secondary">Cancel</button>
           <button @click="executeTool" :disabled="executing" class="btn-primary">
-            {{ executing ? '执行中...' : '执行工具' }}
+            {{ executing ? 'Executing...' : 'Execute Tool' }}
           </button>
         </div>
       </div>
@@ -363,7 +363,7 @@
         class="bg-blue-600 text-white p-3 rounded shadow-lg max-w-sm"
       >
         <div class="flex justify-between items-start">
-          <span class="text-sm">{{ notification.method || '通知' }}</span>
+          <span class="text-sm">{{ notification.method || 'Notification' }}</span>
           <button @click="handleDismissNotification(notification.id)" class="ml-2 text-white hover:text-gray-200">×</button>
         </div>
         <div v-if="notification.params" class="text-xs mt-1 opacity-90">
@@ -473,7 +473,7 @@ onMounted(() => {
       postMessage({ type: 'get-status' });
     }
   } catch (err) {
-    console.error('初始化失败:', err);
+    console.error('Initialization failed:', err);
   }
 });
 
@@ -500,7 +500,7 @@ function setupMessageHandlers() {
         break;
         
       case 'tool-error':
-        error.value = `工具 ${message.toolName} 调用失败: ${message.error}`;
+        error.value = `Tool ${message.toolName} call failed: ${message.error}`;
         // 显示工具执行错误
         showToolResult({ error: message.error });
         break;
@@ -721,7 +721,7 @@ async function executeTool() {
     showCallModal.value = false;
   } catch (error) {
     console.error('MainApp: Error parsing tool arguments', error);
-    alert('参数格式错误，请检查JSON格式');
+    alert('Invalid parameter format, please check JSON syntax');
   } finally {
     executing.value = false;
   }
@@ -790,7 +790,7 @@ function formatToolResult(result: any): string {
   try {
     // 如果是错误信息，直接返回
     if (result.error) {
-      return `错误: ${result.error}`;
+      return `Error: ${result.error}`;
     }
     
     // 尝试格式化为 JSON

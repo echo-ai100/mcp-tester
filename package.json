@@ -2,7 +2,7 @@
     "name": "mcp-tester",
     "displayName": "MCP Tester",
     "description": "A full-featured VSCode extension for testing and debugging MCP servers",
-    "version": "0.1.0",
+    "version": "0.1.2",
     "publisher": "echoai",
     "repository": {
         "type": "git",
